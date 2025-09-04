@@ -94,6 +94,18 @@ void sharpsm83::write_data(const uint16_t& address, const uint8_t& data)
 //##############################################################################
 void sharpsm83::execute(uint8_t opcode) 
 {
+    if(opcode == 0xCB)
+    {
+        execute_0xCB_instruction(opcode);
+    }
+    else
+    {
+        execute_normal_instruction(opcode);
+    }
+}
+//##############################################################################
+void sharpsm83::execute_normal_instruction(uint8_t opcode)
+{
     std::cout<<"Executing: 0x"<<std::hex<<static_cast<int>(opcode)<<'\n';
 
     if(opcode_table[opcode])
@@ -103,6 +115,20 @@ void sharpsm83::execute(uint8_t opcode)
     else
     {
         std::cout<<"Unrecognized instruction: 0x"<<std::hex<<static_cast<int>(opcode)<<'\n';
+    }
+}
+//##############################################################################
+void sharpsm83::execute_0xCB_instruction(uint8_t opcode)
+{
+    std::cout<<"Executing: 0xCB 0x"<<std::hex<<static_cast<int>(opcode)<<'\n';
+
+    if(CB_opcode_table[opcode])
+    {
+        CB_opcode_table[opcode]();
+    }
+    else
+    {
+        std::cout<<"Unrecognized instruction: 0xCB 0x"<<std::hex<<static_cast<int>(opcode)<<'\n';
     }
 }
 //##############################################################################
@@ -694,6 +720,22 @@ void sharpsm83::cp_op_from_address(uint8_t& op1, uint16_t& address)
     PC.b0_15 += 1;
 }
 //##############################################################################
+void sharpsm83::rlc_p(reg8& reg)
+{
+    bool msb = reg.b7;
+    reg.b0_7 <<= 1;
+    reg.b0 = msb;
+
+    set_zero_flag(reg.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(msb); // C flag
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+//##############################################################################
 void sharpsm83::nop() { execute_nop(); } // 0x00
 void sharpsm83::ld_bc_imm16() { ld(BC.b0_15); } // 0x01
 void sharpsm83::ld_membc_a() { ld_to_address(BC.b0_15, AF.Hi.b0_7); } // 0x02
@@ -897,6 +939,13 @@ void sharpsm83::cp_a_h() { cp_op(AF.Hi.b0_7, HL.Hi.b0_7); } //0xBC
 void sharpsm83::cp_a_l() { cp_op(AF.Hi.b0_7, HL.Lo.b0_7); } //0xBD
 void sharpsm83::cp_a_memhl() { cp_op_from_address(AF.Hi.b0_7, HL.b0_15); } //0xBE
 void sharpsm83::cp_a_a()  { cp_op(AF.Hi.b0_7, AF.Hi.b0_7); } //0xBF
+//##############################################################################
+
+
+// 0xCB instructions
+//##############################################################################
+void sharpsm83::rlc_b() { rlc_p(BC.Hi); } // Ox00
+void sharpsm83::rlc_c() { rlc_p(BC.Lo); } // Ox01
 //##############################################################################
 void sharpsm83::emulate_cycles(int cycles)
 {
@@ -1108,6 +1157,9 @@ void sharpsm83::initialize_opcodes()
     opcode_table[0xBD] = std::bind(&sharpsm83::cp_a_l, this);
     opcode_table[0xBE] = std::bind(&sharpsm83::cp_a_memhl, this); 
     opcode_table[0xBF] = std::bind(&sharpsm83::cp_a_a, this);
+
+    CB_opcode_table[0x00] = std::bind(&sharpsm83::rlc_b, this);
+    CB_opcode_table[0x01] = std::bind(&sharpsm83::rlc_c, this);
 }
 //##############################################################################
 void sharpsm83::printRegisters()

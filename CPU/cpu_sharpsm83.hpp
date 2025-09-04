@@ -148,6 +148,8 @@ private:
     void cp_op(uint8_t& op1, uint8_t& op2);
     void cp_op_from_address(uint8_t& op1, uint16_t& address);
 
+    void rlc_p(reg8& reg);
+
     // instructions
     // 0x00 - 0x0F
     void nop();
@@ -365,6 +367,30 @@ private:
     void cp_a_memhl();
     void cp_a_a(); 
 
+    // 0xC0 - 0xCF
+    void ret_nz();
+    void pop_bc();
+    void jp_nz_imm16();
+    void jp_imm16();
+    void call_nz_imm16();
+    void push_bc();
+    void add_a_imm8();
+    void rst_0x00();
+    void ret_z();
+    void ret();
+    void jp_z_imm16();
+    void prefix();
+    void call_z_imm16();
+    void call_imm16();
+    void adc_a_imm8();
+    void rst_0x08();
+
+    // CB prefixed instructions
+
+    // 0x00 - 0x0F
+    void rlc_b();
+    void rlc_c();
+
     using OpcodeHandler = std::function<void(void)>;
 
     // normal instructions
@@ -383,6 +409,8 @@ public:
     ~sharpsm83();
 
     void execute(uint8_t opcode);
+    void execute_normal_instruction(uint8_t opcode);
+    void execute_0xCB_instruction(uint8_t opcode);
 
     void printRegisters();
 
