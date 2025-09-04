@@ -1,4 +1,4 @@
-# gbemu
+# OG Gameboy emulator.
 
 ## Prerequisites
 
@@ -22,4 +22,9 @@ cmake ..
 
 ```sh
 cmake --build .
+```
+## Running
+
+```sh
+./gbemu
 ```
