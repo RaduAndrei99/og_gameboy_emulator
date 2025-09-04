@@ -204,6 +204,10 @@ private:
 
     void srlmem_param(uint16_t& address);
 
+    void bit_param(uint8_t bit, reg8& reg);
+
+    void bitmem_param(uint8_t bit, uint16_t& address);
+
     void stack_push(reg16& reg);
     void stack_pop(reg16& reg);
 
@@ -559,6 +563,79 @@ private:
     void srl_l();
     void srl_memhl();
     void srl_a();
+
+    void bit_0_b();
+    void bit_0_c();
+    void bit_0_d();
+    void bit_0_e();
+    void bit_0_h();
+    void bit_0_l();
+    void bit_0_memhl();
+    void bit_0_a();
+
+    void bit_1_b();
+    void bit_1_c();
+    void bit_1_d();
+    void bit_1_e();
+    void bit_1_h();
+    void bit_1_l();
+    void bit_1_memhl();
+    void bit_1_a();
+
+    void bit_2_b();
+    void bit_2_c();
+    void bit_2_d();
+    void bit_2_e();
+    void bit_2_h();
+    void bit_2_l();
+    void bit_2_memhl();
+    void bit_2_a();
+
+    void bit_3_b();
+    void bit_3_c();
+    void bit_3_d();
+    void bit_3_e();
+    void bit_3_h();
+    void bit_3_l();
+    void bit_3_memhl();
+    void bit_3_a();
+
+    void bit_4_b();
+    void bit_4_c();
+    void bit_4_d();
+    void bit_4_e();
+    void bit_4_h();
+    void bit_4_l();
+    void bit_4_memhl();
+    void bit_4_a();
+
+    void bit_5_b();
+    void bit_5_c();
+    void bit_5_d();
+    void bit_5_e();
+    void bit_5_h();
+    void bit_5_l();
+    void bit_5_memhl();
+    void bit_5_a();
+
+    void bit_6_b();
+    void bit_6_c();
+    void bit_6_d();
+    void bit_6_e();
+    void bit_6_h();
+    void bit_6_l();
+    void bit_6_memhl();
+    void bit_6_a();
+
+    void bit_7_b();
+    void bit_7_c();
+    void bit_7_d();
+    void bit_7_e();
+    void bit_7_h();
+    void bit_7_l();
+    void bit_7_memhl();
+    void bit_7_a();
+
 
     using OpcodeHandler = std::function<void(void)>;
 

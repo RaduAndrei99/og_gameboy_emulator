@@ -1314,6 +1314,35 @@ void sharpsm83::srlmem_param(uint16_t& address)
     PC.b0_15 += 2;
 }
 
+void sharpsm83::bit_param(uint8_t bit, reg8& reg)
+{
+    bool bit_value = (reg.b0_7 >> bit) & 0x01;
+
+    set_zero_flag(!bit_value); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(true); // H flag
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::bitmem_param(uint8_t bit, uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    bool bit_value = (result.b0_7 >> bit) & 0x01;
+
+    set_zero_flag(!bit_value); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(true); // H flag
+
+    emulate_cycles(3);
+
+    PC.b0_15 += 2;
+}
 
 //##############################################################################
 void sharpsm83::nop() { execute_nop(); } // 0x00
@@ -1644,6 +1673,77 @@ void sharpsm83::srl_l() { srl_param(HL.Lo); } // Ox3D
 void sharpsm83::srl_memhl() { srlmem_param(HL.b0_15); } // Ox3E
 void sharpsm83::srl_a() { srl_param(AF.Hi); } // Ox3F
 
+void sharpsm83::bit_0_b() { bit_param(0, BC.Hi); } // Ox40
+void sharpsm83::bit_0_c() { bit_param(0, BC.Lo); } // Ox41
+void sharpsm83::bit_0_d() { bit_param(0, DE.Hi); } // Ox42
+void sharpsm83::bit_0_e() { bit_param(0, DE.Lo); } // Ox43
+void sharpsm83::bit_0_h() { bit_param(0, HL.Hi); } // Ox44
+void sharpsm83::bit_0_l() { bit_param(0, HL.Lo); } // Ox45
+void sharpsm83::bit_0_memhl() { bitmem_param(0, HL.b0_15); } // Ox46
+void sharpsm83::bit_0_a() { bit_param(0, AF.Hi); } // Ox47
+
+void sharpsm83::bit_1_b() { bit_param(1, BC.Hi); } // Ox48
+void sharpsm83::bit_1_c() { bit_param(1, BC.Lo); } // Ox49
+void sharpsm83::bit_1_d() { bit_param(1, DE.Hi); } // Ox4A
+void sharpsm83::bit_1_e() { bit_param(1, DE.Lo); } // Ox4B
+void sharpsm83::bit_1_h() { bit_param(1, HL.Hi); } // Ox4C
+void sharpsm83::bit_1_l() { bit_param(1, HL.Lo); } // Ox4D
+void sharpsm83::bit_1_memhl() { bitmem_param(1, HL.b0_15); } // Ox4E
+void sharpsm83::bit_1_a() { bit_param(1, AF.Hi); } // Ox4F
+
+void sharpsm83::bit_2_b() { bit_param(2, BC.Hi); } // Ox50
+void sharpsm83::bit_2_c() { bit_param(2, BC.Lo); } // Ox51
+void sharpsm83::bit_2_d() { bit_param(2, DE.Hi); } // Ox52
+void sharpsm83::bit_2_e() { bit_param(2, DE.Lo); } // Ox53
+void sharpsm83::bit_2_h() { bit_param(2, HL.Hi); } // Ox54
+void sharpsm83::bit_2_l() { bit_param(2, HL.Lo); } // Ox55
+void sharpsm83::bit_2_memhl() { bitmem_param(2, HL.b0_15); } // Ox56
+void sharpsm83::bit_2_a() { bit_param(2, AF.Hi); } // Ox57
+
+void sharpsm83::bit_3_b() { bit_param(3, BC.Hi); } // Ox58
+void sharpsm83::bit_3_c() { bit_param(3, BC.Lo); } // Ox59
+void sharpsm83::bit_3_d() { bit_param(3, DE.Hi); } // Ox5A
+void sharpsm83::bit_3_e() { bit_param(3, DE.Lo); } // Ox5B
+void sharpsm83::bit_3_h() { bit_param(3, HL.Hi); } // Ox5C
+void sharpsm83::bit_3_l() { bit_param(3, HL.Lo); } // Ox5D
+void sharpsm83::bit_3_memhl() { bitmem_param(3, HL.b0_15); } // Ox5E
+void sharpsm83::bit_3_a() { bit_param(3, AF.Hi); } // Ox5F
+
+void sharpsm83::bit_4_b() { bit_param(4, BC.Hi); } // Ox60
+void sharpsm83::bit_4_c() { bit_param(4, BC.Lo); } // Ox61
+void sharpsm83::bit_4_d() { bit_param(4, DE.Hi); } // Ox62
+void sharpsm83::bit_4_e() { bit_param(4, DE.Lo); } // Ox63
+void sharpsm83::bit_4_h() { bit_param(4, HL.Hi); } // Ox64
+void sharpsm83::bit_4_l() { bit_param(4, HL.Lo); } // Ox65
+void sharpsm83::bit_4_memhl() { bitmem_param(4, HL.b0_15); } // Ox66
+void sharpsm83::bit_4_a() { bit_param(4, AF.Hi); } // Ox67
+
+void sharpsm83::bit_5_b() { bit_param(5, BC.Hi); } // Ox68
+void sharpsm83::bit_5_c() { bit_param(5, BC.Lo); } // Ox69
+void sharpsm83::bit_5_d() { bit_param(5, DE.Hi); } // Ox6A
+void sharpsm83::bit_5_e() { bit_param(5, DE.Lo); } // Ox6B
+void sharpsm83::bit_5_h() { bit_param(5, HL.Hi); } // Ox6C
+void sharpsm83::bit_5_l() { bit_param(5, HL.Lo); } // Ox6D
+void sharpsm83::bit_5_memhl() { bitmem_param(5, HL.b0_15); } // Ox6E
+void sharpsm83::bit_5_a() { bit_param(5, AF.Hi); } // Ox6F
+
+void sharpsm83::bit_6_b() { bit_param(6, BC.Hi); } // Ox70
+void sharpsm83::bit_6_c() { bit_param(6, BC.Lo); } // Ox71
+void sharpsm83::bit_6_d() { bit_param(6, DE.Hi); } // Ox72
+void sharpsm83::bit_6_e() { bit_param(6, DE.Lo); } // Ox73
+void sharpsm83::bit_6_h() { bit_param(6, HL.Hi); } // Ox74
+void sharpsm83::bit_6_l() { bit_param(6, HL.Lo); } // Ox75
+void sharpsm83::bit_6_memhl() { bitmem_param(6, HL.b0_15); } // Ox76
+void sharpsm83::bit_6_a() { bit_param(6, AF.Hi); } // Ox77
+
+void sharpsm83::bit_7_b() { bit_param(7, BC.Hi); } // Ox78
+void sharpsm83::bit_7_c() { bit_param(7, BC.Lo); } // Ox79
+void sharpsm83::bit_7_d() { bit_param(7, DE.Hi); } // Ox7A
+void sharpsm83::bit_7_e() { bit_param(7, DE.Lo); } // Ox7B
+void sharpsm83::bit_7_h() { bit_param(7, HL.Hi); } // Ox7C
+void sharpsm83::bit_7_l() { bit_param(7, HL.Lo); } // Ox7D
+void sharpsm83::bit_7_memhl() { bitmem_param(7, HL.b0_15); } // Ox7E
+void sharpsm83::bit_7_a() { bit_param(7, AF.Hi); } // Ox7F
 
 
 //##############################################################################
@@ -1975,7 +2075,7 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x35] = std::bind(&sharpsm83::swap_l, this);
     CB_opcode_table[0x36] = std::bind(&sharpsm83::swap_memhl, this);
     CB_opcode_table[0x37] = std::bind(&sharpsm83::swap_a, this);
-    
+
     CB_opcode_table[0x38] = std::bind(&sharpsm83::srl_b, this);
     CB_opcode_table[0x39] = std::bind(&sharpsm83::srl_c, this);
     CB_opcode_table[0x3A] = std::bind(&sharpsm83::srl_d, this);
@@ -1984,6 +2084,78 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x3D] = std::bind(&sharpsm83::srl_l, this);
     CB_opcode_table[0x3E] = std::bind(&sharpsm83::srl_memhl, this);
     CB_opcode_table[0x3F] = std::bind(&sharpsm83::srl_a, this);
+
+    CB_opcode_table[0x40] = std::bind(&sharpsm83::bit_0_b, this);
+    CB_opcode_table[0x41] = std::bind(&sharpsm83::bit_0_c, this);
+    CB_opcode_table[0x42] = std::bind(&sharpsm83::bit_0_d, this);
+    CB_opcode_table[0x43] = std::bind(&sharpsm83::bit_0_e, this);
+    CB_opcode_table[0x44] = std::bind(&sharpsm83::bit_0_h, this);
+    CB_opcode_table[0x45] = std::bind(&sharpsm83::bit_0_l, this);
+    CB_opcode_table[0x46] = std::bind(&sharpsm83::bit_0_memhl, this);
+    CB_opcode_table[0x47] = std::bind(&sharpsm83::bit_0_a, this);
+
+    CB_opcode_table[0x48] = std::bind(&sharpsm83::bit_1_b, this);
+    CB_opcode_table[0x49] = std::bind(&sharpsm83::bit_1_c, this);
+    CB_opcode_table[0x4A] = std::bind(&sharpsm83::bit_1_d, this);
+    CB_opcode_table[0x4B] = std::bind(&sharpsm83::bit_1_e, this);
+    CB_opcode_table[0x4C] = std::bind(&sharpsm83::bit_1_h, this);
+    CB_opcode_table[0x4D] = std::bind(&sharpsm83::bit_1_l, this);
+    CB_opcode_table[0x4E] = std::bind(&sharpsm83::bit_1_memhl, this);
+    CB_opcode_table[0x4F] = std::bind(&sharpsm83::bit_1_a, this);
+
+    CB_opcode_table[0x50] = std::bind(&sharpsm83::bit_2_b, this);
+    CB_opcode_table[0x51] = std::bind(&sharpsm83::bit_2_c, this);
+    CB_opcode_table[0x52] = std::bind(&sharpsm83::bit_2_d, this);
+    CB_opcode_table[0x53] = std::bind(&sharpsm83::bit_2_e, this);
+    CB_opcode_table[0x54] = std::bind(&sharpsm83::bit_2_h, this);
+    CB_opcode_table[0x55] = std::bind(&sharpsm83::bit_2_l, this);
+    CB_opcode_table[0x56] = std::bind(&sharpsm83::bit_2_memhl, this);
+    CB_opcode_table[0x57] = std::bind(&sharpsm83::bit_2_a, this);
+
+    CB_opcode_table[0x58] = std::bind(&sharpsm83::bit_3_b, this);
+    CB_opcode_table[0x59] = std::bind(&sharpsm83::bit_3_c, this);
+    CB_opcode_table[0x5A] = std::bind(&sharpsm83::bit_3_d, this);
+    CB_opcode_table[0x5B] = std::bind(&sharpsm83::bit_3_e, this);
+    CB_opcode_table[0x5C] = std::bind(&sharpsm83::bit_3_h, this);
+    CB_opcode_table[0x5D] = std::bind(&sharpsm83::bit_3_l, this);
+    CB_opcode_table[0x5E] = std::bind(&sharpsm83::bit_3_memhl, this);
+    CB_opcode_table[0x5F] = std::bind(&sharpsm83::bit_3_a, this);
+
+    CB_opcode_table[0x60] = std::bind(&sharpsm83::bit_4_b, this);
+    CB_opcode_table[0x61] = std::bind(&sharpsm83::bit_4_c, this);
+    CB_opcode_table[0x62] = std::bind(&sharpsm83::bit_4_d, this);
+    CB_opcode_table[0x63] = std::bind(&sharpsm83::bit_4_e, this);
+    CB_opcode_table[0x64] = std::bind(&sharpsm83::bit_4_h, this);
+    CB_opcode_table[0x65] = std::bind(&sharpsm83::bit_4_l, this);
+    CB_opcode_table[0x66] = std::bind(&sharpsm83::bit_4_memhl, this);
+    CB_opcode_table[0x67] = std::bind(&sharpsm83::bit_4_a, this);
+
+    CB_opcode_table[0x68] = std::bind(&sharpsm83::bit_5_b, this);
+    CB_opcode_table[0x69] = std::bind(&sharpsm83::bit_5_c, this);
+    CB_opcode_table[0x6A] = std::bind(&sharpsm83::bit_5_d, this);
+    CB_opcode_table[0x6B] = std::bind(&sharpsm83::bit_5_e, this);
+    CB_opcode_table[0x6C] = std::bind(&sharpsm83::bit_5_h, this);
+    CB_opcode_table[0x6D] = std::bind(&sharpsm83::bit_5_l, this);
+    CB_opcode_table[0x6E] = std::bind(&sharpsm83::bit_5_memhl, this);
+    CB_opcode_table[0x6F] = std::bind(&sharpsm83::bit_5_a, this);
+
+    CB_opcode_table[0x70] = std::bind(&sharpsm83::bit_6_b, this);
+    CB_opcode_table[0x71] = std::bind(&sharpsm83::bit_6_c, this);
+    CB_opcode_table[0x72] = std::bind(&sharpsm83::bit_6_d, this);
+    CB_opcode_table[0x73] = std::bind(&sharpsm83::bit_6_e, this);
+    CB_opcode_table[0x74] = std::bind(&sharpsm83::bit_6_h, this);
+    CB_opcode_table[0x75] = std::bind(&sharpsm83::bit_6_l, this);
+    CB_opcode_table[0x76] = std::bind(&sharpsm83::bit_6_memhl, this);
+    CB_opcode_table[0x77] = std::bind(&sharpsm83::bit_6_a, this);
+
+    CB_opcode_table[0x78] = std::bind(&sharpsm83::bit_7_b, this);
+    CB_opcode_table[0x79] = std::bind(&sharpsm83::bit_7_c, this);
+    CB_opcode_table[0x7A] = std::bind(&sharpsm83::bit_7_d, this);
+    CB_opcode_table[0x7B] = std::bind(&sharpsm83::bit_7_e, this);
+    CB_opcode_table[0x7C] = std::bind(&sharpsm83::bit_7_h, this);
+    CB_opcode_table[0x7D] = std::bind(&sharpsm83::bit_7_l, this);
+    CB_opcode_table[0x7E] = std::bind(&sharpsm83::bit_7_memhl, this);
+    CB_opcode_table[0x7F] = std::bind(&sharpsm83::bit_7_a, this);
 }
 
 //##############################################################################
