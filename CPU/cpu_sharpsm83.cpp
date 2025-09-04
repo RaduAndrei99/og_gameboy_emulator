@@ -1041,6 +1041,27 @@ void sharpsm83::rlc_param(reg8& reg)
 
     PC.b0_15 += 2;
 }
+
+void sharpsm83::rlcmem_param(uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    bool msb = result.b7;
+    result.b0_7 <<= 1;
+    result.b0 = msb;
+
+    set_zero_flag(result.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(msb); // C flag
+
+    emulate_cycles(4);
+
+    PC.b0_15 += 2;
+}
+
 //##############################################################################
 void sharpsm83::nop() { execute_nop(); } // 0x00
 void sharpsm83::ld_bc_imm16() { ld(BC.b0_15); } // 0x01
@@ -1301,6 +1322,12 @@ void sharpsm83::rst_0x28() { call( (uint16_t)0x0028 ); }// 0xEF
 //##############################################################################
 void sharpsm83::rlc_b() { rlc_param(BC.Hi); } // Ox00
 void sharpsm83::rlc_c() { rlc_param(BC.Lo); } // Ox01
+void sharpsm83::rlc_d() { rlc_param(DE.Hi); } // Ox02
+void sharpsm83::rlc_e() { rlc_param(DE.Lo); } // Ox03
+void sharpsm83::rlc_h() { rlc_param(HL.Hi); } // Ox04
+void sharpsm83::rlc_l() { rlc_param(HL.Lo); } // Ox05
+void sharpsm83::rlc_memhl() {rlcmem_param(HL.b0_15);} // Ox06
+void sharpsm83::rlc_a() { rlc_param(AF.Hi); } // Ox07
 //##############################################################################
 void sharpsm83::emulate_cycles(int cycles)
 {
@@ -1566,6 +1593,12 @@ void sharpsm83::initialize_opcodes()
 
     CB_opcode_table[0x00] = std::bind(&sharpsm83::rlc_b, this);
     CB_opcode_table[0x01] = std::bind(&sharpsm83::rlc_c, this);
+    CB_opcode_table[0x02] = std::bind(&sharpsm83::rlc_d, this);
+    CB_opcode_table[0x03] = std::bind(&sharpsm83::rlc_e, this);
+    CB_opcode_table[0x04] = std::bind(&sharpsm83::rlc_h, this);
+    CB_opcode_table[0x05] = std::bind(&sharpsm83::rlc_l, this);
+    CB_opcode_table[0x06] = std::bind(&sharpsm83::rlc_memhl, this);
+    CB_opcode_table[0x07] = std::bind(&sharpsm83::rlc_a, this);
 }
 //##############################################################################
 void sharpsm83::printRegisters()

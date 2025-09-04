@@ -174,6 +174,7 @@ private:
 
     void ret_condition(bool condition);
     void reti_op();
+    void rlcmem_param(uint16_t& address);
 
     void stack_push(reg16& reg);
     void stack_pop(reg16& reg);
@@ -458,6 +459,12 @@ private:
     // 0x00 - 0x0F
     void rlc_b();
     void rlc_c();
+    void rlc_d();
+    void rlc_e();
+    void rlc_h();
+    void rlc_l();
+    void rlc_memhl();
+    void rlc_a();
 
     using OpcodeHandler = std::function<void(void)>;
 
