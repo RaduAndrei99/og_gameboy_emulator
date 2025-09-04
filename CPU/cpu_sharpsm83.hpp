@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include <functional>
+#include <array>
 
 #include "../MEMORY/gb_wram.hpp"
 #include "../CARTRIDGE/gb_cartridge.hpp"
@@ -53,6 +54,7 @@ private:
     reg16 PC;
 
     bool is_halted;
+    bool interrupts_enabled;
 
     // cpu chip enable  
     bool ce;
@@ -65,12 +67,12 @@ private:
     void set_subtraction_flag(bool val);
 
     bool getHalfCarryFlag();
-    void setHalfCarryFlag(bool val);
+    void set_half_carry_flag(bool val);
 
     bool get_carry_flag();
-    void setCarryFlag(bool val);
+    void set_carry_flag(bool val);
     // cpu instructions to set carry flag
-    void setCarryFlag();
+    void set_carry_flag();
     // cpu instructions to set complement flag
     void complement_carry_flag();
 
@@ -96,6 +98,7 @@ private:
     void jp(bool cond);
 
     void call(bool cond);
+    void call(const uint16_t& address);
 
     // generic decimal adjust
     void da(reg8& reg);
@@ -107,6 +110,12 @@ private:
     void ld_to_address(const uint16_t& address, const uint8_t& data);
     // writes imm8 data to address indicated by reg
     void ld_to_address(const reg16& reg);
+
+    void ld_to_address(const reg8& reg);
+
+
+    void ldh_to_address(const reg8& reg);
+    void ldh_to_address(const reg8& to, const reg8& reg);
 
     // writes data from address
     void ld_from_address(uint8_t& reg, const uint16_t& address);
@@ -131,36 +140,47 @@ private:
 
     void add(uint8_t& op1, uint8_t& op2);
     void add_from_address(uint8_t& op1, uint16_t& address);
+    void add(reg8& reg);
+    void add_e8(reg16& reg);
 
     void adc(uint8_t& op1, uint8_t& op2);
     void adc_from_address(uint8_t& op1, uint16_t& address);
+    void adc(reg8& reg);
 
     void sub(uint8_t& op1, uint8_t& op2);
     void sub_from_address(uint8_t& op1, uint16_t& address);
+    void sub(reg8& reg);
 
     void sbc(uint8_t& op1, uint8_t& op2);
     void sbc_from_address(uint8_t& op1, uint16_t& address);
-    
+    void sbc(reg8& reg);
+
     void and_op(uint8_t& op1, uint8_t& op2);
     void and_op_from_address(uint8_t& op1, uint16_t& address);
+    void and_op(reg8& reg);
 
     void xor_op(uint8_t& op1, uint8_t& op2);
     void xor_op_from_address(uint8_t& op1, uint16_t& address);
+    void xor_op(reg8& reg);
 
     void or_op(uint8_t& op1, uint8_t& op2);
     void or_op_from_address(uint8_t& op1, uint16_t& address);
+    void or_op(reg8& reg);
 
     void cp_op(uint8_t& op1, uint8_t& op2);
     void cp_op_from_address(uint8_t& op1, uint16_t& address);
 
     void rlc_param(reg8& reg);
 
-    void ret(bool condition);
+    void ret_condition(bool condition);
+    void reti_op();
 
     void stack_push(reg16& reg);
     void stack_pop(reg16& reg);
 
     void pop(reg16& reg);
+    void push(reg16& reg);
+
 
     // instructions
     // 0x00 - 0x0F
@@ -396,6 +416,42 @@ private:
     void call_imm16();
     void adc_a_imm8();
     void rst_0x08();
+
+    // 0xD0 - 0xDF
+    void ret_nc();
+    void pop_de();
+    void jp_nc_imm16();
+    void op_0xD3();
+    void call_nc_imm16();
+    void push_de();
+    void sub_a_imm8();
+    void rst_0x10();
+    void ret_c();
+    void reti();
+    void jp_c_imm16();
+    void op_0xDB();
+    void call_c_a16();
+    void op_0xDD();
+    void sbc_a_imm8();
+    void rst_0x18();
+
+    // 0xE - 0xEF
+    void ldh_memimm8_a();
+    void pop_hl();
+    void ldh_memc_a();
+    void op_0xE3();
+    void op_0xE4();
+    void push_hl();
+    void and_a_imm8();
+    void rst_0x20();
+    void add_sp_e8();
+    void jp_hl();
+    void ld_memimm16_a();
+    void op_0xEB();
+    void op_0xEC();
+    void op_0xED();
+    void xor_a_imm8();
+    void rst_0x28();
 
     // CB prefixed instructions
 

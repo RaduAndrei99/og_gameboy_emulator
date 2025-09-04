@@ -13,16 +13,16 @@ int main()
     sm83.reset();
 
     // normal instructions
-    for(int i=0;i<0xC0 + 1; ++i)
+    for(int i=0;i<0xF0 + 1; ++i)
     {
         sm83.execute(i);
     }
 
     // OxCB instructions
-    for(int i=0;i<0xF + 1; ++i)
-    {
-        sm83.execute_0xCB_instruction(i);
-    }
+    // for(int i=0;i<0xF + 1; ++i)
+    // {
+    //     sm83.execute_0xCB_instruction(i);
+    // }
 
     sm83.printRegisters();
     
