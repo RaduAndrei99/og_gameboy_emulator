@@ -1,0 +1,9 @@
+add_library(CPU cpu_sharpsm83.cpp)
+
+target_include_directories(CPU PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Dependencies
+add_subdirectory(${CMAKE_SOURCE_DIR}/MEMORY ${CMAKE_BINARY_DIR}/MEMORY_build)
+add_subdirectory(${CMAKE_SOURCE_DIR}/CARTRIDGE ${CMAKE_BINARY_DIR}/CARTRIDGE_build)
+
+target_link_libraries(CPU PUBLIC MEMORY CARTRIDGE)
