@@ -1056,7 +1056,187 @@ void sharpsm83::rlcmem_param(uint16_t& address)
     set_subtraction_flag(false); // N flag
     setHalfCarryFlag(false); // H flag
     setCarryFlag(msb); // C flag
+    write_data(address, result.b0_7);
+    emulate_cycles(4);
 
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::rrc_param(reg8& reg)
+{
+    bool lsb = reg.b0;
+    reg.b0_7 >>= 1;
+    reg.b7 = lsb;
+
+    set_zero_flag(reg.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(lsb); // C flag
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::rrcmem_param(uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    bool lsb = result.b0;
+    result.b0_7 >>= 1;
+    result.b7 = lsb;
+
+    set_zero_flag(result.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(lsb); // C flag
+    write_data(address, result.b0_7);
+    emulate_cycles(4);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::rl_param(reg8& reg)
+{
+    bool msb = reg.b7;
+    reg.b0_7 <<= 1;
+    reg.b0 = get_carry_flag();
+
+    set_zero_flag(reg.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(msb); // C flag
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::rlmem_param(uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    bool msb = result.b7;
+    result.b0_7 <<= 1;
+    result.b0 = get_carry_flag();
+
+    set_zero_flag(result.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(msb); // C flag
+    write_data(address, result.b0_7);
+    emulate_cycles(4);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::rr_param(reg8& reg)
+{
+    bool lsb = reg.b0;
+    reg.b0_7 >>= 1;
+    reg.b7 = get_carry_flag();
+
+    set_zero_flag(reg.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(lsb); // C flag
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::rrmem_param(uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    bool lsb = result.b0;
+    result.b0_7 >>= 1;
+    result.b7 = get_carry_flag();
+
+    set_zero_flag(result.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(lsb); // C flag
+    write_data(address, result.b0_7);
+    emulate_cycles(4);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::sla_param(reg8& reg)
+{
+    bool msb = reg.b7;
+    reg.b0_7 <<= 1;
+
+    set_zero_flag(reg.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(msb); // C flag
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::slamem_param(uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    bool msb = result.b7;
+    result.b0_7 <<= 1;
+
+    set_zero_flag(result.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(msb); // C flag
+    write_data(address, result.b0_7);
+    emulate_cycles(4);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::sra_param(reg8& reg)
+{
+    bool msb = reg.b7;
+    bool lsb = reg.b0;
+    reg.b0_7 >>= 1;
+    reg.b7 = msb;
+
+    set_zero_flag(reg.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(lsb); // C flag
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::sramem_param(uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    bool msb = result.b7;
+    bool lsb = result.b0;
+    result.b0_7 >>= 1;
+    result.b7 = msb;
+
+    set_zero_flag(result.b0_7 == 0); // Z flag
+    set_subtraction_flag(false); // N flag
+    setHalfCarryFlag(false); // H flag
+    setCarryFlag(lsb); // C flag
+    write_data(address, result.b0_7);
     emulate_cycles(4);
 
     PC.b0_15 += 2;
@@ -1326,8 +1506,55 @@ void sharpsm83::rlc_d() { rlc_param(DE.Hi); } // Ox02
 void sharpsm83::rlc_e() { rlc_param(DE.Lo); } // Ox03
 void sharpsm83::rlc_h() { rlc_param(HL.Hi); } // Ox04
 void sharpsm83::rlc_l() { rlc_param(HL.Lo); } // Ox05
-void sharpsm83::rlc_memhl() {rlcmem_param(HL.b0_15);} // Ox06
+void sharpsm83::rlc_memhl() { rlcmem_param(HL.b0_15); } // Ox06
 void sharpsm83::rlc_a() { rlc_param(AF.Hi); } // Ox07
+
+void sharpsm83::rrc_b() { rrc_param(BC.Hi); } // Ox08
+void sharpsm83::rrc_c() { rrc_param(BC.Lo); } // Ox09
+void sharpsm83::rrc_d() { rrc_param(DE.Hi); } // Ox0A
+void sharpsm83::rrc_e() { rrc_param(DE.Lo); } // Ox0B
+void sharpsm83::rrc_h() { rrc_param(HL.Hi); } // Ox0C
+void sharpsm83::rrc_l() { rrc_param(HL.Lo); } // Ox0D
+void sharpsm83::rrc_memhl() {rrcmem_param(HL.b0_15);} // Ox0E
+void sharpsm83::rrc_a() { rrc_param(AF.Hi); } // Ox0F
+
+void sharpsm83::rl_b() { rl_param(BC.Hi); } // Ox10
+void sharpsm83::rl_c() { rl_param(BC.Lo); } // Ox11
+void sharpsm83::rl_d() { rl_param(DE.Hi); } // Ox12
+void sharpsm83::rl_e() { rl_param(DE.Lo); } // Ox13
+void sharpsm83::rl_h() { rl_param(HL.Hi); } // Ox14
+void sharpsm83::rl_l() { rl_param(HL.Lo); } // Ox15
+void sharpsm83::rl_memhl() { rlmem_param(HL.b0_15); } // Ox16
+void sharpsm83::rl_a() { rl_param(AF.Hi); } // Ox17
+void sharpsm83::rr_b() { rr_param(BC.Hi); } // Ox18
+void sharpsm83::rr_c() { rr_param(BC.Lo); } // Ox19
+void sharpsm83::rr_d() { rr_param(DE.Hi); } // Ox1A
+void sharpsm83::rr_e() { rr_param(DE.Lo); } // Ox1B
+void sharpsm83::rr_h() { rr_param(HL.Hi); } // Ox1C
+void sharpsm83::rr_l() { rr_param(HL.Lo); } // Ox1D
+void sharpsm83::rr_memhl() { rrmem_param(HL.b0_15); } // Ox1E
+void sharpsm83::rr_a() { rr_param(AF.Hi); } // Ox1F
+
+void sharpsm83::sla_b() { sla_param(BC.Hi); } // Ox20
+void sharpsm83::sla_c() { sla_param(BC.Lo); } // Ox21
+void sharpsm83::sla_d() { sla_param(DE.Hi); } // Ox22
+void sharpsm83::sla_e() { sla_param(DE.Lo); } // Ox23
+void sharpsm83::sla_h() { sla_param(HL.Hi); } // Ox24
+void sharpsm83::sla_l() { sla_param(HL.Lo); } // Ox25
+void sharpsm83::sla_memhl() { slamem_param(HL.b0_15); } // Ox26
+void sharpsm83::sla_a() { sla_param(AF.Hi); } // Ox27
+
+void sharpsm83::sra_b() { sra_param(BC.Hi); } // Ox28
+void sharpsm83::sra_c() { sra_param(BC.Lo); } // Ox29
+void sharpsm83::sra_d() { sra_param(DE.Hi); } // Ox2A
+void sharpsm83::sra_e() { sra_param(DE.Lo); } // Ox2B
+void sharpsm83::sra_h() { sra_param(HL.Hi); } // Ox2C
+void sharpsm83::sra_l() { sra_param(HL.Lo); } // Ox2D
+void sharpsm83::sra_memhl() {sramem_param(HL.b0_15);} // Ox2E
+void sharpsm83::sra_a() { sra_param(AF.Hi); } // Ox2F
+
+
+
 //##############################################################################
 void sharpsm83::emulate_cycles(int cycles)
 {

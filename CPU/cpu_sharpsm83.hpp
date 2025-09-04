@@ -176,6 +176,26 @@ private:
     void reti_op();
     void rlcmem_param(uint16_t& address);
 
+    void rrc_param(reg8& reg);
+
+    void rrcmem_param(uint16_t& address);
+
+    void rl_param(reg8& reg);
+
+    void rlmem_param(uint16_t& address);
+
+    void rr_param(reg8& reg);
+
+    void rrmem_param(uint16_t& address);
+
+    void sla_param(reg8& reg);
+
+    void slamem_param(uint16_t& address);
+
+    void sra_param(reg8& reg);
+
+    void sramem_param(uint16_t& address);
+
     void stack_push(reg16& reg);
     void stack_pop(reg16& reg);
 
@@ -465,6 +485,53 @@ private:
     void rlc_l();
     void rlc_memhl();
     void rlc_a();
+
+    void rrc_b();
+    void rrc_c();
+    void rrc_d();
+    void rrc_e();
+    void rrc_h();
+    void rrc_l();
+    void rrc_memhl();
+    void rrc_a();
+
+    // 0x10 - 0x1F
+    void rl_b();
+    void rl_c();
+    void rl_d();
+    void rl_e();
+    void rl_h();
+    void rl_l();
+    void rl_memhl();
+    void rl_a();
+
+    void rr_b();
+    void rr_c();
+    void rr_d();
+    void rr_e();
+    void rr_h();
+    void rr_l();
+    void rr_memhl();
+    void rr_a();
+
+    // 0x20 - 0x2F
+    void sla_b();
+    void sla_c();
+    void sla_d();
+    void sla_e();
+    void sla_h();
+    void sla_l();
+    void sla_memhl();
+    void sla_a();
+
+    void sra_b();
+    void sra_c();
+    void sra_d();
+    void sra_e();
+    void sra_h();
+    void sra_l();
+    void sra_memhl();
+    void sra_a();
 
     using OpcodeHandler = std::function<void(void)>;
 
