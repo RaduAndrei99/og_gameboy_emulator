@@ -572,6 +572,7 @@ private:
     void srl_memhl();
     void srl_a();
 
+    // 0x40 - 0x4F
     void bit_0_b();
     void bit_0_c();
     void bit_0_d();
@@ -590,6 +591,7 @@ private:
     void bit_1_memhl();
     void bit_1_a();
 
+    // 0x50 - 0x5F
     void bit_2_b();
     void bit_2_c();
     void bit_2_d();
@@ -608,6 +610,7 @@ private:
     void bit_3_memhl();
     void bit_3_a();
 
+    // 0x60 - 0x6F
     void bit_4_b();
     void bit_4_c();
     void bit_4_d();
@@ -626,6 +629,7 @@ private:
     void bit_5_memhl();
     void bit_5_a();
 
+    // 0x70 - 0x7F
     void bit_6_b();
     void bit_6_c();
     void bit_6_d();
@@ -644,6 +648,7 @@ private:
     void bit_7_memhl();
     void bit_7_a();
 
+    // 0x80 - 0x8F
     void res_0_b();
     void res_0_c();
     void res_0_d();
@@ -662,6 +667,7 @@ private:
     void res_1_memhl();
     void res_1_a();
 
+    // 0x90 - 0x9F
     void res_2_b();
     void res_2_c();
     void res_2_d();
@@ -680,6 +686,7 @@ private:
     void res_3_memhl();
     void res_3_a();
 
+    // 0xA0 - 0xAF
     void res_4_b();
     void res_4_c();
     void res_4_d();
@@ -698,6 +705,7 @@ private:
     void res_5_memhl();
     void res_5_a();
 
+    // 0xB0 - 0xBF
     void res_6_b();
     void res_6_c();
     void res_6_d();
@@ -716,6 +724,7 @@ private:
     void res_7_memhl();
     void res_7_a();
 
+    // 0xC0 - 0xCF
     void set_0_b();
     void set_0_c();
     void set_0_d();
@@ -734,6 +743,7 @@ private:
     void set_1_memhl();
     void set_1_a();
 
+    // 0xD0 - 0xDF
     void set_2_b();
     void set_2_c();
     void set_2_d();
@@ -752,6 +762,7 @@ private:
     void set_3_memhl();
     void set_3_a();
 
+    // 0xE0 - 0xEF
     void set_4_b();
     void set_4_c();
     void set_4_d();
@@ -770,6 +781,7 @@ private:
     void set_5_memhl();
     void set_5_a();
 
+    // 0xF0 - 0xFF
     void set_6_b();
     void set_6_c();
     void set_6_d();
