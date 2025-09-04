@@ -196,6 +196,14 @@ private:
 
     void sramem_param(uint16_t& address);
 
+    void swap_param(reg8& reg);
+
+    void swapmem_param(uint16_t& address);
+
+    void srl_param(reg8& reg);
+
+    void srlmem_param(uint16_t& address);
+
     void stack_push(reg16& reg);
     void stack_pop(reg16& reg);
 
@@ -532,6 +540,25 @@ private:
     void sra_l();
     void sra_memhl();
     void sra_a();
+
+    // 0x30 - 0x3F
+    void swap_b();
+    void swap_c();
+    void swap_d();
+    void swap_e();
+    void swap_h();
+    void swap_l();
+    void swap_memhl();
+    void swap_a();
+
+    void srl_b();
+    void srl_c();
+    void srl_d();
+    void srl_e();
+    void srl_h();
+    void srl_l();
+    void srl_memhl();
+    void srl_a();
 
     using OpcodeHandler = std::function<void(void)>;
 
