@@ -1818,6 +1818,10 @@ void sharpsm83::initialize_opcodes()
     opcode_table[0xEE] = std::bind(&sharpsm83::xor_a_imm8, this);
     opcode_table[0xEF] = std::bind(&sharpsm83::rst_0x28, this);
 
+}
+
+void sharpsm83::initialize_cbopcodes() 
+{
     CB_opcode_table[0x00] = std::bind(&sharpsm83::rlc_b, this);
     CB_opcode_table[0x01] = std::bind(&sharpsm83::rlc_c, this);
     CB_opcode_table[0x02] = std::bind(&sharpsm83::rlc_d, this);
@@ -1826,7 +1830,53 @@ void sharpsm83::initialize_opcodes()
     CB_opcode_table[0x05] = std::bind(&sharpsm83::rlc_l, this);
     CB_opcode_table[0x06] = std::bind(&sharpsm83::rlc_memhl, this);
     CB_opcode_table[0x07] = std::bind(&sharpsm83::rlc_a, this);
+
+    CB_opcode_table[0x08] = std::bind(&sharpsm83::rrc_b, this);
+    CB_opcode_table[0x09] = std::bind(&sharpsm83::rrc_c, this);
+    CB_opcode_table[0x0A] = std::bind(&sharpsm83::rrc_d, this);
+    CB_opcode_table[0x0B] = std::bind(&sharpsm83::rrc_e, this);
+    CB_opcode_table[0x0C] = std::bind(&sharpsm83::rrc_h, this);
+    CB_opcode_table[0x0D] = std::bind(&sharpsm83::rrc_l, this);
+    CB_opcode_table[0x0E] = std::bind(&sharpsm83::rrc_memhl, this);
+    CB_opcode_table[0x0F] = std::bind(&sharpsm83::rrc_a, this);
+
+    CB_opcode_table[0x10] = std::bind(&sharpsm83::rl_b, this);
+    CB_opcode_table[0x11] = std::bind(&sharpsm83::rl_c, this);
+    CB_opcode_table[0x12] = std::bind(&sharpsm83::rl_d, this);
+    CB_opcode_table[0x13] = std::bind(&sharpsm83::rl_e, this);
+    CB_opcode_table[0x14] = std::bind(&sharpsm83::rl_h, this);
+    CB_opcode_table[0x15] = std::bind(&sharpsm83::rl_l, this);
+    CB_opcode_table[0x16] = std::bind(&sharpsm83::rl_memhl, this);
+    CB_opcode_table[0x17] = std::bind(&sharpsm83::rl_a, this);
+
+    CB_opcode_table[0x18] = std::bind(&sharpsm83::rr_b, this);
+    CB_opcode_table[0x19] = std::bind(&sharpsm83::rr_c, this);
+    CB_opcode_table[0x1A] = std::bind(&sharpsm83::rr_d, this);
+    CB_opcode_table[0x1B] = std::bind(&sharpsm83::rr_e, this);
+    CB_opcode_table[0x1C] = std::bind(&sharpsm83::rr_h, this);
+    CB_opcode_table[0x1D] = std::bind(&sharpsm83::rr_l, this);
+    CB_opcode_table[0x1E] = std::bind(&sharpsm83::rr_memhl, this);
+    CB_opcode_table[0x1F] = std::bind(&sharpsm83::rr_a, this);
+
+    CB_opcode_table[0x20] = std::bind(&sharpsm83::sla_b, this);
+    CB_opcode_table[0x21] = std::bind(&sharpsm83::sla_c, this);
+    CB_opcode_table[0x22] = std::bind(&sharpsm83::sla_d, this);
+    CB_opcode_table[0x23] = std::bind(&sharpsm83::sla_e, this);
+    CB_opcode_table[0x24] = std::bind(&sharpsm83::sla_h, this);
+    CB_opcode_table[0x25] = std::bind(&sharpsm83::sla_l, this);
+    CB_opcode_table[0x26] = std::bind(&sharpsm83::sla_memhl, this);
+    CB_opcode_table[0x27] = std::bind(&sharpsm83::sla_a, this);
+
+    CB_opcode_table[0x28] = std::bind(&sharpsm83::sra_b, this);
+    CB_opcode_table[0x29] = std::bind(&sharpsm83::sra_c, this);
+    CB_opcode_table[0x2A] = std::bind(&sharpsm83::sra_d, this);
+    CB_opcode_table[0x2B] = std::bind(&sharpsm83::sra_e, this);
+    CB_opcode_table[0x2C] = std::bind(&sharpsm83::sra_h, this);
+    CB_opcode_table[0x2D] = std::bind(&sharpsm83::sra_l, this);
+    CB_opcode_table[0x2E] = std::bind(&sharpsm83::sra_memhl, this);
+    CB_opcode_table[0x2F] = std::bind(&sharpsm83::sra_a, this);
 }
+
 //##############################################################################
 void sharpsm83::printRegisters()
 {

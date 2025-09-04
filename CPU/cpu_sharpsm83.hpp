@@ -542,6 +542,7 @@ private:
     std::array< OpcodeHandler, 0x1<<CPU_BITS > CB_opcode_table;
 
     void initialize_opcodes();
+    void initialize_cbopcodes();
 
     void emulate_cycles(int cycles);
 
