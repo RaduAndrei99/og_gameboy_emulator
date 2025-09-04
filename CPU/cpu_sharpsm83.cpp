@@ -233,6 +233,43 @@ void sharpsm83::jr(bool cond)
     PC.b0_15 = cond ? new_pc : PC.b0_15 + 2;
 }
 //##############################################################################
+void sharpsm83::jp(const uint16_t& address)
+{
+    emulate_cycles(1);
+    
+    PC.b0_15 = address;
+}
+//##############################################################################
+void sharpsm83::jp(bool cond)
+{
+    fetch_data(PC.b0_15);
+    uint8_t low = fetched_data;
+    fetch_data(PC.b0_15 + 1);
+    uint8_t high = fetched_data;
+
+    uint16_t address = (high << 0x8) | low;
+
+    emulate_cycles(3);
+    
+    PC.b0_15 = cond ? address : PC.b0_15 + 3;
+}
+//##############################################################################
+void sharpsm83::call(bool cond)
+{
+    fetch_data(PC.b0_15);
+    uint8_t low = fetched_data;
+    fetch_data(PC.b0_15 + 1);
+    uint8_t high = fetched_data;
+
+    uint16_t address = (high << 0x8) | low;
+
+    emulate_cycles(6);
+
+    stack_push(PC);
+    
+    PC.b0_15 = address;
+}
+//##############################################################################
 void sharpsm83::da(reg8& reg)
 { 
     uint8_t adjustment = 0;
@@ -720,7 +757,47 @@ void sharpsm83::cp_op_from_address(uint8_t& op1, uint16_t& address)
     PC.b0_15 += 1;
 }
 //##############################################################################
-void sharpsm83::rlc_p(reg8& reg)
+void sharpsm83::stack_pop(reg16& reg)
+{
+    fetch_data(SP.b0_15);
+    uint8_t low = fetched_data;
+    SP.b0_15 += 1;
+
+    fetch_data(SP.b0_15);
+    uint8_t high = fetched_data;
+    SP.b0_15 += 1;
+
+    reg.b0_15 = (high << 0x8) | low;
+}
+//##############################################################################
+void sharpsm83::pop(reg16& reg)
+{
+    stack_pop(reg); 
+
+    emulate_cycles(3);
+
+    PC.b0_15 += 1;
+}
+//##############################################################################
+void sharpsm83::stack_push(reg16& reg)
+{
+    write_data(SP.b0_15, reg.Hi.b0_7);
+    SP.b0_15 -= 1;
+
+    write_data(SP.b0_15, reg.Lo.b0_7);
+    SP.b0_15 -= 1;
+}
+//##############################################################################
+void sharpsm83::ret(bool condition)
+{
+    if(condition) stack_pop(PC);     
+
+    emulate_cycles(5);
+
+    //PC.b0_15 += 1;
+}
+//##############################################################################
+void sharpsm83::rlc_param(reg8& reg)
 {
     bool msb = reg.b7;
     reg.b0_7 <<= 1;
@@ -940,12 +1017,19 @@ void sharpsm83::cp_a_l() { cp_op(AF.Hi.b0_7, HL.Lo.b0_7); } //0xBD
 void sharpsm83::cp_a_memhl() { cp_op_from_address(AF.Hi.b0_7, HL.b0_15); } //0xBE
 void sharpsm83::cp_a_a()  { cp_op(AF.Hi.b0_7, AF.Hi.b0_7); } //0xBF
 //##############################################################################
+void sharpsm83::ret_nz() { ret(!get_subtraction_flag()); } // 0xC0
+void sharpsm83::pop_bc() { pop(BC); } // 0xC1
+void sharpsm83::jp_nz_imm16() { jp(!get_zero_flag()); } //0xC2
+void sharpsm83::jp_imm16() { jp(true); } //0xC3
+void sharpsm83::call_nz_imm16() { call(!get_zero_flag()); } //0xC4
+void sharpsm83::push_bc() { stack_push(BC); } 
+
 
 
 // 0xCB instructions
 //##############################################################################
-void sharpsm83::rlc_b() { rlc_p(BC.Hi); } // Ox00
-void sharpsm83::rlc_c() { rlc_p(BC.Lo); } // Ox01
+void sharpsm83::rlc_b() { rlc_param(BC.Hi); } // Ox00
+void sharpsm83::rlc_c() { rlc_param(BC.Lo); } // Ox01
 //##############################################################################
 void sharpsm83::emulate_cycles(int cycles)
 {

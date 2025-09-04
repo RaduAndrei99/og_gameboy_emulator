@@ -92,6 +92,11 @@ private:
     // generic jump instruction
     void jr(bool cond);
 
+    void jp(const uint16_t& address);
+    void jp(bool cond);
+
+    void call(bool cond);
+
     // generic decimal adjust
     void da(reg8& reg);
 
@@ -148,7 +153,14 @@ private:
     void cp_op(uint8_t& op1, uint8_t& op2);
     void cp_op_from_address(uint8_t& op1, uint16_t& address);
 
-    void rlc_p(reg8& reg);
+    void rlc_param(reg8& reg);
+
+    void ret(bool condition);
+
+    void stack_push(reg16& reg);
+    void stack_pop(reg16& reg);
+
+    void pop(reg16& reg);
 
     // instructions
     // 0x00 - 0x0F
