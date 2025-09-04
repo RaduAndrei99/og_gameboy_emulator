@@ -1344,6 +1344,52 @@ void sharpsm83::bitmem_param(uint8_t bit, uint16_t& address)
     PC.b0_15 += 2;
 }
 
+void sharpsm83::res_param(uint8_t bit, reg8& reg)
+{
+    reg.b0_7 &= ~(1 << bit);
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::resmem_param(uint8_t bit, uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    result.b0_7 &= ~(1 << bit);
+    write_data(address, result.b0_7);
+
+    emulate_cycles(4);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::set_param(uint8_t bit, reg8& reg)
+{
+    reg.b0_7 |= (1 << bit);
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 2;
+}
+
+void sharpsm83::setmem_param(uint8_t bit, uint16_t& address)
+{
+    fetch_data(address);
+    reg8 result;
+    
+    result.b0_7 = fetched_data;
+    result.b0_7 |= (1 << bit);
+    write_data(address, result.b0_7);
+
+    emulate_cycles(4);
+
+    PC.b0_15 += 2;
+}
+
 //##############################################################################
 void sharpsm83::nop() { execute_nop(); } // 0x00
 void sharpsm83::ld_bc_imm16() { ld(BC.b0_15); } // 0x01
@@ -1744,6 +1790,136 @@ void sharpsm83::bit_7_h() { bit_param(7, HL.Hi); } // Ox7C
 void sharpsm83::bit_7_l() { bit_param(7, HL.Lo); } // Ox7D
 void sharpsm83::bit_7_memhl() { bitmem_param(7, HL.b0_15); } // Ox7E
 void sharpsm83::bit_7_a() { bit_param(7, AF.Hi); } // Ox7F
+
+void sharpsm83::res_0_b() { res_param(0, BC.Hi); } // Ox80
+void sharpsm83::res_0_c() { res_param(0, BC.Lo); } // Ox81
+void sharpsm83::res_0_d() { res_param(0, DE.Hi); } // Ox82
+void sharpsm83::res_0_e() { res_param(0, DE.Lo); } // Ox83
+void sharpsm83::res_0_h() { res_param(0, HL.Hi); } // Ox84
+void sharpsm83::res_0_l() { res_param(0, HL.Lo); } // Ox85
+void sharpsm83::res_0_memhl() { resmem_param(0, HL.b0_15); } // Ox86
+void sharpsm83::res_0_a() { res_param(0, AF.Hi); } // Ox87
+void sharpsm83::res_1_b() { res_param(1, BC.Hi); } // Ox88
+void sharpsm83::res_1_c() { res_param(1, BC.Lo); } // Ox89
+void sharpsm83::res_1_d() { res_param(1, DE.Hi); } // Ox8A
+void sharpsm83::res_1_e() { res_param(1, DE.Lo); } // Ox8B
+void sharpsm83::res_1_h() { res_param(1, HL.Hi); } // Ox8C
+void sharpsm83::res_1_l() { res_param(1, HL.Lo); } // Ox8D
+void sharpsm83::res_1_memhl() { resmem_param(1, HL.b0_15); } // Ox8E
+void sharpsm83::res_1_a() { res_param(1, AF.Hi); } // Ox8F
+void sharpsm83::res_2_b() { res_param(2, BC.Hi); } // Ox90
+void sharpsm83::res_2_c() { res_param(2, BC.Lo); } // Ox91
+void sharpsm83::res_2_d() { res_param(2, DE.Hi); } // Ox92
+void sharpsm83::res_2_e() { res_param(2, DE.Lo); } // Ox93
+void sharpsm83::res_2_h() { res_param(2, HL.Hi); } // Ox94
+void sharpsm83::res_2_l() { res_param(2, HL.Lo); } // Ox95
+void sharpsm83::res_2_memhl() { resmem_param(2, HL.b0_15); } // Ox96
+void sharpsm83::res_2_a() { res_param(2, AF.Hi); } // Ox97
+void sharpsm83::res_3_b() { res_param(3, BC.Hi); } // Ox98
+void sharpsm83::res_3_c() { res_param(3, BC.Lo); } // Ox99
+void sharpsm83::res_3_d() { res_param(3, DE.Hi); } // Ox9A
+void sharpsm83::res_3_e() { res_param(3, DE.Lo); } // Ox9B
+void sharpsm83::res_3_h() { res_param(3, HL.Hi); } // Ox9C
+void sharpsm83::res_3_l() { res_param(3, HL.Lo); } // Ox9D
+void sharpsm83::res_3_memhl() { resmem_param(3, HL.b0_15); } // Ox9E
+void sharpsm83::res_3_a() { res_param(3, AF.Hi); } // Ox9F
+void sharpsm83::res_4_b() { res_param(4, BC.Hi); } // OxA0
+void sharpsm83::res_4_c() { res_param(4, BC.Lo); } // OxA1
+void sharpsm83::res_4_d() { res_param(4, DE.Hi); } // OxA2
+void sharpsm83::res_4_e() { res_param(4, DE.Lo); } // OxA3
+void sharpsm83::res_4_h() { res_param(4, HL.Hi); } // OxA4
+void sharpsm83::res_4_l() { res_param(4, HL.Lo); } // OxA5
+void sharpsm83::res_4_memhl() { resmem_param(4, HL.b0_15); } // OxA6
+void sharpsm83::res_4_a() { res_param(4, AF.Hi); } // OxA7
+void sharpsm83::res_5_b() { res_param(5, BC.Hi); } // OxA8
+void sharpsm83::res_5_c() { res_param(5, BC.Lo); } // OxA9
+void sharpsm83::res_5_d() { res_param(5, DE.Hi); } // OxAA
+void sharpsm83::res_5_e() { res_param(5, DE.Lo); } // OxAB
+void sharpsm83::res_5_h() { res_param(5, HL.Hi); } // OxAC
+void sharpsm83::res_5_l() { res_param(5, HL.Lo); } // OxAD
+void sharpsm83::res_5_memhl() { resmem_param(5, HL.b0_15); } // OxAE
+void sharpsm83::res_5_a() { res_param(5, AF.Hi); } // OxAF
+void sharpsm83::res_6_b() { res_param(6, BC.Hi); } // OxB0
+void sharpsm83::res_6_c() { res_param(6, BC.Lo); } // OxB1
+void sharpsm83::res_6_d() { res_param(6, DE.Hi); } // OxB2
+void sharpsm83::res_6_e() { res_param(6, DE.Lo); } // OxB3
+void sharpsm83::res_6_h() { res_param(6, HL.Hi); } // OxB4
+void sharpsm83::res_6_l() { res_param(6, HL.Lo); } // OxB5
+void sharpsm83::res_6_memhl() { resmem_param(6, HL.b0_15); } // OxB6
+void sharpsm83::res_6_a() { res_param(6, AF.Hi); } // OxB7
+void sharpsm83::res_7_b() { res_param(7, BC.Hi); } // OxB8
+void sharpsm83::res_7_c() { res_param(7, BC.Lo); } // OxB9
+void sharpsm83::res_7_d() { res_param(7, DE.Hi); } // OxBA
+void sharpsm83::res_7_e() { res_param(7, DE.Lo); } // OxBB
+void sharpsm83::res_7_h() { res_param(7, HL.Hi); } // OxBC
+void sharpsm83::res_7_l() { res_param(7, HL.Lo); } // OxBD
+void sharpsm83::res_7_memhl() { resmem_param(7, HL.b0_15); } // OxBE
+void sharpsm83::res_7_a() { res_param(7, AF.Hi); } // OxBF
+void sharpsm83::set_0_b() { set_param(0, BC.Hi); } // OxC0
+void sharpsm83::set_0_c() { set_param(0, BC.Lo); } // OxC1
+void sharpsm83::set_0_d() { set_param(0, DE.Hi); } // OxC2
+void sharpsm83::set_0_e() { set_param(0, DE.Lo); } // OxC3
+void sharpsm83::set_0_h() { set_param(0, HL.Hi); } // OxC4
+void sharpsm83::set_0_l() { set_param(0, HL.Lo); } // OxC5
+void sharpsm83::set_0_memhl() { setmem_param(0, HL.b0_15); } // OxC6
+void sharpsm83::set_0_a() { set_param(0, AF.Hi); } // OxC7
+void sharpsm83::set_1_b() { set_param(1, BC.Hi); } // OxC8
+void sharpsm83::set_1_c() { set_param(1, BC.Lo); } // OxC9
+void sharpsm83::set_1_d() { set_param(1, DE.Hi); } // OxCA
+void sharpsm83::set_1_e() { set_param(1, DE.Lo); } // OxCB
+void sharpsm83::set_1_h() { set_param(1, HL.Hi); } // OxCC
+void sharpsm83::set_1_l() { set_param(1, HL.Lo); } // OxCD
+void sharpsm83::set_1_memhl() { setmem_param(1, HL.b0_15); } // OxCE
+void sharpsm83::set_1_a() { set_param(1, AF.Hi); } // OxCF
+void sharpsm83::set_2_b() { set_param(2, BC.Hi); } // OxD0
+void sharpsm83::set_2_c() { set_param(2, BC.Lo); } // OxD1
+void sharpsm83::set_2_d() { set_param(2, DE.Hi); } // OxD2
+void sharpsm83::set_2_e() { set_param(2, DE.Lo); } // OxD3
+void sharpsm83::set_2_h() { set_param(2, HL.Hi); } // OxD4
+void sharpsm83::set_2_l() { set_param(2, HL.Lo); } // OxD5
+void sharpsm83::set_2_memhl() { setmem_param(2, HL.b0_15); } // OxD6
+void sharpsm83::set_2_a() { set_param(2, AF.Hi); } // OxD7
+void sharpsm83::set_3_b() { set_param(3, BC.Hi); } // OxD8
+void sharpsm83::set_3_c() { set_param(3, BC.Lo); } // OxD9
+void sharpsm83::set_3_d() { set_param(3, DE.Hi); } // OxDA
+void sharpsm83::set_3_e() { set_param(3, DE.Lo); } // OxDB
+void sharpsm83::set_3_h() { set_param(3, HL.Hi); } // OxDC
+void sharpsm83::set_3_l() { set_param(3, HL.Lo); } // OxDD
+void sharpsm83::set_3_memhl() { setmem_param(3, HL.b0_15); } // OxDE
+void sharpsm83::set_3_a() { set_param(3, AF.Hi); } // OxDF
+void sharpsm83::set_4_b() { set_param(4, BC.Hi); } // OxE0
+void sharpsm83::set_4_c() { set_param(4, BC.Lo); } // OxE1
+void sharpsm83::set_4_d() { set_param(4, DE.Hi); } // OxE2
+void sharpsm83::set_4_e() { set_param(4, DE.Lo); } // OxE3
+void sharpsm83::set_4_h() { set_param(4, HL.Hi); } // OxE4
+void sharpsm83::set_4_l() { set_param(4, HL.Lo); } // OxE5
+void sharpsm83::set_4_memhl() { setmem_param(4, HL.b0_15); } // OxE6
+void sharpsm83::set_4_a() { set_param(4, AF.Hi); } // OxE7
+void sharpsm83::set_5_b() { set_param(5, BC.Hi); } // OxE8
+void sharpsm83::set_5_c() { set_param(5, BC.Lo); } // OxE9
+void sharpsm83::set_5_d() { set_param(5, DE.Hi); } // OxEA
+void sharpsm83::set_5_e() { set_param(5, DE.Lo); } // OxEB
+void sharpsm83::set_5_h() { set_param(5, HL.Hi); } // OxEC
+void sharpsm83::set_5_l() { set_param(5, HL.Lo); } // OxED
+void sharpsm83::set_5_memhl() { setmem_param(5, HL.b0_15); } // OxEE
+void sharpsm83::set_5_a() { set_param(5, AF.Hi); } // OxEF
+void sharpsm83::set_6_b() { set_param(6, BC.Hi); } // OxF0
+void sharpsm83::set_6_c() { set_param(6, BC.Lo); } // OxF1
+void sharpsm83::set_6_d() { set_param(6, DE.Hi); } // OxF2
+void sharpsm83::set_6_e() { set_param(6, DE.Lo); } // OxF3
+void sharpsm83::set_6_h() { set_param(6, HL.Hi); } // OxF4
+void sharpsm83::set_6_l() { set_param(6, HL.Lo); } // OxF5
+void sharpsm83::set_6_memhl() { setmem_param(6, HL.b0_15); } // OxF6
+void sharpsm83::set_6_a() { set_param(6, AF.Hi); } // OxF7
+void sharpsm83::set_7_b() { set_param(7, BC.Hi); } // OxF8
+void sharpsm83::set_7_c() { set_param(7, BC.Lo); } // OxF9
+void sharpsm83::set_7_d() { set_param(7, DE.Hi); } // OxFA
+void sharpsm83::set_7_e() { set_param(7, DE.Lo); } // OxFB
+void sharpsm83::set_7_h() { set_param(7, HL.Hi); } // OxFC
+void sharpsm83::set_7_l() { set_param(7, HL.Lo); } // OxFD
+void sharpsm83::set_7_memhl() { setmem_param(7, HL.b0_15); } // OxFE
+void sharpsm83::set_7_a() { set_param(7, AF.Hi); } // OxFF
+
 
 
 //##############################################################################
@@ -2156,6 +2332,151 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x7D] = std::bind(&sharpsm83::bit_7_l, this);
     CB_opcode_table[0x7E] = std::bind(&sharpsm83::bit_7_memhl, this);
     CB_opcode_table[0x7F] = std::bind(&sharpsm83::bit_7_a, this);
+
+    CB_opcode_table[0x80] = std::bind(&sharpsm83::res_0_b, this);
+    CB_opcode_table[0x81] = std::bind(&sharpsm83::res_0_c, this);
+    CB_opcode_table[0x82] = std::bind(&sharpsm83::res_0_d, this);
+    CB_opcode_table[0x83] = std::bind(&sharpsm83::res_0_e, this);
+    CB_opcode_table[0x84] = std::bind(&sharpsm83::res_0_h, this);
+    CB_opcode_table[0x85] = std::bind(&sharpsm83::res_0_l, this);
+    CB_opcode_table[0x86] = std::bind(&sharpsm83::res_0_memhl, this);
+    CB_opcode_table[0x87] = std::bind(&sharpsm83::res_0_a, this);
+    
+    CB_opcode_table[0x88] = std::bind(&sharpsm83::res_1_b, this);
+    CB_opcode_table[0x89] = std::bind(&sharpsm83::res_1_c, this);
+    CB_opcode_table[0x8A] = std::bind(&sharpsm83::res_1_d, this);
+    CB_opcode_table[0x8B] = std::bind(&sharpsm83::res_1_e, this);
+    CB_opcode_table[0x8C] = std::bind(&sharpsm83::res_1_h, this);
+    CB_opcode_table[0x8D] = std::bind(&sharpsm83::res_1_l, this);
+    CB_opcode_table[0x8E] = std::bind(&sharpsm83::res_1_memhl, this);
+    CB_opcode_table[0x8F] = std::bind(&sharpsm83::res_1_a, this);
+
+    CB_opcode_table[0x90] = std::bind(&sharpsm83::res_2_b, this);
+    CB_opcode_table[0x91] = std::bind(&sharpsm83::res_2_c, this);
+    CB_opcode_table[0x92] = std::bind(&sharpsm83::res_2_d, this);
+    CB_opcode_table[0x93] = std::bind(&sharpsm83::res_2_e, this);
+    CB_opcode_table[0x94] = std::bind(&sharpsm83::res_2_h, this);
+    CB_opcode_table[0x95] = std::bind(&sharpsm83::res_2_l, this);
+    CB_opcode_table[0x96] = std::bind(&sharpsm83::res_2_memhl, this);
+    CB_opcode_table[0x97] = std::bind(&sharpsm83::res_2_a, this);
+
+    CB_opcode_table[0x98] = std::bind(&sharpsm83::res_3_b, this);
+    CB_opcode_table[0x99] = std::bind(&sharpsm83::res_3_c, this);
+    CB_opcode_table[0x9A] = std::bind(&sharpsm83::res_3_d, this);
+    CB_opcode_table[0x9B] = std::bind(&sharpsm83::res_3_e, this);
+    CB_opcode_table[0x9C] = std::bind(&sharpsm83::res_3_h, this);
+    CB_opcode_table[0x9D] = std::bind(&sharpsm83::res_3_l, this);
+    CB_opcode_table[0x9E] = std::bind(&sharpsm83::res_3_memhl, this);
+    CB_opcode_table[0x9F] = std::bind(&sharpsm83::res_3_a, this);
+
+    CB_opcode_table[0xA0] = std::bind(&sharpsm83::res_4_b, this);
+    CB_opcode_table[0xA1] = std::bind(&sharpsm83::res_4_c, this);
+    CB_opcode_table[0xA2] = std::bind(&sharpsm83::res_4_d, this);
+    CB_opcode_table[0xA3] = std::bind(&sharpsm83::res_4_e, this);
+    CB_opcode_table[0xA4] = std::bind(&sharpsm83::res_4_h, this);
+    CB_opcode_table[0xA5] = std::bind(&sharpsm83::res_4_l, this);
+    CB_opcode_table[0xA6] = std::bind(&sharpsm83::res_4_memhl, this);
+    CB_opcode_table[0xA7] = std::bind(&sharpsm83::res_4_a, this);
+
+    CB_opcode_table[0xA8] = std::bind(&sharpsm83::res_5_b, this);
+    CB_opcode_table[0xA9] = std::bind(&sharpsm83::res_5_c, this);
+    CB_opcode_table[0xAA] = std::bind(&sharpsm83::res_5_d, this);
+    CB_opcode_table[0xAB] = std::bind(&sharpsm83::res_5_e, this);
+    CB_opcode_table[0xAC] = std::bind(&sharpsm83::res_5_h, this);
+    CB_opcode_table[0xAD] = std::bind(&sharpsm83::res_5_l, this);
+    CB_opcode_table[0xAE] = std::bind(&sharpsm83::res_5_memhl, this);
+    CB_opcode_table[0xAF] = std::bind(&sharpsm83::res_5_a, this);
+
+    CB_opcode_table[0xB0] = std::bind(&sharpsm83::res_6_b, this);
+    CB_opcode_table[0xB1] = std::bind(&sharpsm83::res_6_c, this);
+    CB_opcode_table[0xB2] = std::bind(&sharpsm83::res_6_d, this);
+    CB_opcode_table[0xB3] = std::bind(&sharpsm83::res_6_e, this);
+    CB_opcode_table[0xB4] = std::bind(&sharpsm83::res_6_h, this);
+    CB_opcode_table[0xB5] = std::bind(&sharpsm83::res_6_l, this);
+    CB_opcode_table[0xB6] = std::bind(&sharpsm83::res_6_memhl, this);
+    CB_opcode_table[0xB7] = std::bind(&sharpsm83::res_6_a, this);
+
+    CB_opcode_table[0xB8] = std::bind(&sharpsm83::res_7_b, this);
+    CB_opcode_table[0xB9] = std::bind(&sharpsm83::res_7_c, this);
+    CB_opcode_table[0xBA] = std::bind(&sharpsm83::res_7_d, this);
+    CB_opcode_table[0xBB] = std::bind(&sharpsm83::res_7_e, this);
+    CB_opcode_table[0xBC] = std::bind(&sharpsm83::res_7_h, this);
+    CB_opcode_table[0xBD] = std::bind(&sharpsm83::res_7_l, this);
+    CB_opcode_table[0xBE] = std::bind(&sharpsm83::res_7_memhl, this);
+    CB_opcode_table[0xBF] = std::bind(&sharpsm83::res_7_a, this);
+
+    CB_opcode_table[0xC0] = std::bind(&sharpsm83::set_0_b, this);
+    CB_opcode_table[0xC1] = std::bind(&sharpsm83::set_0_c, this);
+    CB_opcode_table[0xC2] = std::bind(&sharpsm83::set_0_d, this);
+    CB_opcode_table[0xC3] = std::bind(&sharpsm83::set_0_e, this);
+    CB_opcode_table[0xC4] = std::bind(&sharpsm83::set_0_h, this);
+    CB_opcode_table[0xC5] = std::bind(&sharpsm83::set_0_l, this);
+    CB_opcode_table[0xC6] = std::bind(&sharpsm83::set_0_memhl, this);
+    CB_opcode_table[0xC7] = std::bind(&sharpsm83::set_0_a, this);
+
+    CB_opcode_table[0xC8] = std::bind(&sharpsm83::set_1_b, this);
+    CB_opcode_table[0xC9] = std::bind(&sharpsm83::set_1_c, this);
+    CB_opcode_table[0xCA] = std::bind(&sharpsm83::set_1_d, this);
+    CB_opcode_table[0xCB] = std::bind(&sharpsm83::set_1_e, this);
+    CB_opcode_table[0xCC] = std::bind(&sharpsm83::set_1_h, this);
+    CB_opcode_table[0xCD] = std::bind(&sharpsm83::set_1_l, this);
+    CB_opcode_table[0xCE] = std::bind(&sharpsm83::set_1_memhl, this);
+    CB_opcode_table[0xCF] = std::bind(&sharpsm83::set_1_a, this);
+
+    CB_opcode_table[0xD0] = std::bind(&sharpsm83::set_2_b, this);
+    CB_opcode_table[0xD1] = std::bind(&sharpsm83::set_2_c, this);
+    CB_opcode_table[0xD2] = std::bind(&sharpsm83::set_2_d, this);
+    CB_opcode_table[0xD3] = std::bind(&sharpsm83::set_2_e, this);
+    CB_opcode_table[0xD4] = std::bind(&sharpsm83::set_2_h, this);
+    CB_opcode_table[0xD5] = std::bind(&sharpsm83::set_2_l, this);
+    CB_opcode_table[0xD6] = std::bind(&sharpsm83::set_2_memhl, this);
+    CB_opcode_table[0xD7] = std::bind(&sharpsm83::set_2_a, this);
+
+    CB_opcode_table[0xD8] = std::bind(&sharpsm83::set_3_b, this);
+    CB_opcode_table[0xD9] = std::bind(&sharpsm83::set_3_c, this);
+    CB_opcode_table[0xDA] = std::bind(&sharpsm83::set_3_d, this);
+    CB_opcode_table[0xDB] = std::bind(&sharpsm83::set_3_e, this);
+    CB_opcode_table[0xDC] = std::bind(&sharpsm83::set_3_h, this);
+    CB_opcode_table[0xDD] = std::bind(&sharpsm83::set_3_l, this);
+    CB_opcode_table[0xDE] = std::bind(&sharpsm83::set_3_memhl, this);
+    CB_opcode_table[0xDF] = std::bind(&sharpsm83::set_3_a, this);
+
+    CB_opcode_table[0xE0] = std::bind(&sharpsm83::set_4_b, this);
+    CB_opcode_table[0xE1] = std::bind(&sharpsm83::set_4_c, this);
+    CB_opcode_table[0xE2] = std::bind(&sharpsm83::set_4_d, this);
+    CB_opcode_table[0xE3] = std::bind(&sharpsm83::set_4_e, this);
+    CB_opcode_table[0xE4] = std::bind(&sharpsm83::set_4_h, this);
+    CB_opcode_table[0xE5] = std::bind(&sharpsm83::set_4_l, this);
+    CB_opcode_table[0xE6] = std::bind(&sharpsm83::set_4_memhl, this);
+    CB_opcode_table[0xE7] = std::bind(&sharpsm83::set_4_a, this);
+
+    CB_opcode_table[0xE8] = std::bind(&sharpsm83::set_5_b, this);
+    CB_opcode_table[0xE9] = std::bind(&sharpsm83::set_5_c, this);
+    CB_opcode_table[0xEA] = std::bind(&sharpsm83::set_5_d, this);
+    CB_opcode_table[0xEB] = std::bind(&sharpsm83::set_5_e, this);
+    CB_opcode_table[0xEC] = std::bind(&sharpsm83::set_5_h, this);
+    CB_opcode_table[0xED] = std::bind(&sharpsm83::set_5_l, this);
+    CB_opcode_table[0xEE] = std::bind(&sharpsm83::set_5_memhl, this);
+    CB_opcode_table[0xEF] = std::bind(&sharpsm83::set_5_a, this);
+
+    CB_opcode_table[0xF0] = std::bind(&sharpsm83::set_6_b, this);
+    CB_opcode_table[0xF1] = std::bind(&sharpsm83::set_6_c, this);
+    CB_opcode_table[0xF2] = std::bind(&sharpsm83::set_6_d, this);
+    CB_opcode_table[0xF3] = std::bind(&sharpsm83::set_6_e, this);
+    CB_opcode_table[0xF4] = std::bind(&sharpsm83::set_6_h, this);
+    CB_opcode_table[0xF5] = std::bind(&sharpsm83::set_6_l, this);
+    CB_opcode_table[0xF6] = std::bind(&sharpsm83::set_6_memhl, this);
+    CB_opcode_table[0xF7] = std::bind(&sharpsm83::set_6_a, this);
+
+    CB_opcode_table[0xF8] = std::bind(&sharpsm83::set_7_b, this);
+    CB_opcode_table[0xF9] = std::bind(&sharpsm83::set_7_c, this);
+    CB_opcode_table[0xFA] = std::bind(&sharpsm83::set_7_d, this);
+    CB_opcode_table[0xFB] = std::bind(&sharpsm83::set_7_e, this);
+    CB_opcode_table[0xFC] = std::bind(&sharpsm83::set_7_h, this);
+    CB_opcode_table[0xFD] = std::bind(&sharpsm83::set_7_l, this);
+    CB_opcode_table[0xFE] = std::bind(&sharpsm83::set_7_memhl, this);
+    CB_opcode_table[0xFF] = std::bind(&sharpsm83::set_7_a, this);
+
 }
 
 //##############################################################################

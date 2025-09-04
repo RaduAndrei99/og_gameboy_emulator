@@ -206,7 +206,15 @@ private:
 
     void bit_param(uint8_t bit, reg8& reg);
 
-    void bitmem_param(uint8_t bit, uint16_t& address);
+    void bitmem_param(uint8_t bit, uint16_t& address);\
+
+    void res_param(uint8_t bit, reg8& reg);
+
+    void resmem_param(uint8_t bit, uint16_t& address);
+
+    void set_param(uint8_t bit, reg8& reg);
+
+    void setmem_param(uint8_t bit, uint16_t& address);
 
     void stack_push(reg16& reg);
     void stack_pop(reg16& reg);
@@ -635,6 +643,150 @@ private:
     void bit_7_l();
     void bit_7_memhl();
     void bit_7_a();
+
+    void res_0_b();
+    void res_0_c();
+    void res_0_d();
+    void res_0_e();
+    void res_0_h();
+    void res_0_l();
+    void res_0_memhl();
+    void res_0_a();
+
+    void res_1_b();
+    void res_1_c();
+    void res_1_d();
+    void res_1_e();
+    void res_1_h();
+    void res_1_l();
+    void res_1_memhl();
+    void res_1_a();
+
+    void res_2_b();
+    void res_2_c();
+    void res_2_d();
+    void res_2_e();
+    void res_2_h();
+    void res_2_l();
+    void res_2_memhl();
+    void res_2_a();
+
+    void res_3_b();
+    void res_3_c();
+    void res_3_d();
+    void res_3_e();
+    void res_3_h();
+    void res_3_l();
+    void res_3_memhl();
+    void res_3_a();
+
+    void res_4_b();
+    void res_4_c();
+    void res_4_d();
+    void res_4_e();
+    void res_4_h();
+    void res_4_l();
+    void res_4_memhl();
+    void res_4_a();
+
+    void res_5_b();
+    void res_5_c();
+    void res_5_d();
+    void res_5_e();
+    void res_5_h();
+    void res_5_l();
+    void res_5_memhl();
+    void res_5_a();
+
+    void res_6_b();
+    void res_6_c();
+    void res_6_d();
+    void res_6_e();
+    void res_6_h();
+    void res_6_l();
+    void res_6_memhl();
+    void res_6_a();
+
+    void res_7_b();
+    void res_7_c();
+    void res_7_d();
+    void res_7_e();
+    void res_7_h();
+    void res_7_l();
+    void res_7_memhl();
+    void res_7_a();
+
+    void set_0_b();
+    void set_0_c();
+    void set_0_d();
+    void set_0_e();
+    void set_0_h();
+    void set_0_l();
+    void set_0_memhl();
+    void set_0_a();
+
+    void set_1_b();
+    void set_1_c();
+    void set_1_d();
+    void set_1_e();
+    void set_1_h();
+    void set_1_l();
+    void set_1_memhl();
+    void set_1_a();
+
+    void set_2_b();
+    void set_2_c();
+    void set_2_d();
+    void set_2_e();
+    void set_2_h();
+    void set_2_l();
+    void set_2_memhl();
+    void set_2_a();
+
+    void set_3_b();
+    void set_3_c();
+    void set_3_d();
+    void set_3_e();
+    void set_3_h();
+    void set_3_l();
+    void set_3_memhl();
+    void set_3_a();
+
+    void set_4_b();
+    void set_4_c();
+    void set_4_d();
+    void set_4_e();
+    void set_4_h();
+    void set_4_l();
+    void set_4_memhl();
+    void set_4_a();
+
+    void set_5_b();
+    void set_5_c();
+    void set_5_d();
+    void set_5_e();
+    void set_5_h();
+    void set_5_l();
+    void set_5_memhl();
+    void set_5_a();
+
+    void set_6_b();
+    void set_6_c();
+    void set_6_d();
+    void set_6_e();
+    void set_6_h();
+    void set_6_l();
+    void set_6_memhl();
+    void set_6_a();
+
+    void set_7_b();
+    void set_7_c();
+    void set_7_d();
+    void set_7_e();
+    void set_7_h();
+    void set_7_l();
+    void set_7_memhl();
+    void set_7_a();
 
 
     using OpcodeHandler = std::function<void(void)>;
