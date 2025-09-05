@@ -1054,8 +1054,8 @@ void sharpsm83::rlcmem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(msb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(msb); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1070,8 +1070,8 @@ void sharpsm83::rrc_param(reg8& reg)
 
     set_zero_flag(reg.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
 
     emulate_cycles(2);
 
@@ -1090,8 +1090,8 @@ void sharpsm83::rrcmem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1106,8 +1106,8 @@ void sharpsm83::rl_param(reg8& reg)
 
     set_zero_flag(reg.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(msb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(msb); // C flag
 
     emulate_cycles(2);
 
@@ -1126,8 +1126,8 @@ void sharpsm83::rlmem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(msb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(msb); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1142,8 +1142,8 @@ void sharpsm83::rr_param(reg8& reg)
 
     set_zero_flag(reg.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
 
     emulate_cycles(2);
 
@@ -1162,8 +1162,8 @@ void sharpsm83::rrmem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1177,8 +1177,8 @@ void sharpsm83::sla_param(reg8& reg)
 
     set_zero_flag(reg.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(msb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(msb); // C flag
 
     emulate_cycles(2);
 
@@ -1196,8 +1196,8 @@ void sharpsm83::slamem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(msb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(msb); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1213,8 +1213,8 @@ void sharpsm83::sra_param(reg8& reg)
 
     set_zero_flag(reg.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
 
     emulate_cycles(2);
 
@@ -1234,8 +1234,8 @@ void sharpsm83::sramem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1250,8 +1250,8 @@ void sharpsm83::swap_param(reg8& reg)
 
     set_zero_flag(reg.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(false); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(false); // C flag
 
     emulate_cycles(2);
 
@@ -1270,8 +1270,8 @@ void sharpsm83::swapmem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(false); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(false); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1286,8 +1286,8 @@ void sharpsm83::srl_param(reg8& reg)
 
     set_zero_flag(reg.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
 
     emulate_cycles(2);
 
@@ -1306,8 +1306,8 @@ void sharpsm83::srlmem_param(uint16_t& address)
 
     set_zero_flag(result.b0_7 == 0); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(false); // H flag
-    setCarryFlag(lsb); // C flag
+    set_half_carry_flag(false); // H flag
+    set_half_carry_flag(lsb); // C flag
     write_data(address, result.b0_7);
     emulate_cycles(4);
 
@@ -1320,7 +1320,7 @@ void sharpsm83::bit_param(uint8_t bit, reg8& reg)
 
     set_zero_flag(!bit_value); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(true); // H flag
+    set_half_carry_flag(true); // H flag
 
     emulate_cycles(2);
 
@@ -1337,7 +1337,7 @@ void sharpsm83::bitmem_param(uint8_t bit, uint16_t& address)
 
     set_zero_flag(!bit_value); // Z flag
     set_subtraction_flag(false); // N flag
-    setHalfCarryFlag(true); // H flag
+    set_half_carry_flag(true); // H flag
 
     emulate_cycles(3);
 
@@ -2197,7 +2197,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x05] = std::bind(&sharpsm83::rlc_l, this);
     CB_opcode_table[0x06] = std::bind(&sharpsm83::rlc_memhl, this);
     CB_opcode_table[0x07] = std::bind(&sharpsm83::rlc_a, this);
-
     CB_opcode_table[0x08] = std::bind(&sharpsm83::rrc_b, this);
     CB_opcode_table[0x09] = std::bind(&sharpsm83::rrc_c, this);
     CB_opcode_table[0x0A] = std::bind(&sharpsm83::rrc_d, this);
@@ -2215,7 +2214,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x15] = std::bind(&sharpsm83::rl_l, this);
     CB_opcode_table[0x16] = std::bind(&sharpsm83::rl_memhl, this);
     CB_opcode_table[0x17] = std::bind(&sharpsm83::rl_a, this);
-
     CB_opcode_table[0x18] = std::bind(&sharpsm83::rr_b, this);
     CB_opcode_table[0x19] = std::bind(&sharpsm83::rr_c, this);
     CB_opcode_table[0x1A] = std::bind(&sharpsm83::rr_d, this);
@@ -2233,7 +2231,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x25] = std::bind(&sharpsm83::sla_l, this);
     CB_opcode_table[0x26] = std::bind(&sharpsm83::sla_memhl, this);
     CB_opcode_table[0x27] = std::bind(&sharpsm83::sla_a, this);
-
     CB_opcode_table[0x28] = std::bind(&sharpsm83::sra_b, this);
     CB_opcode_table[0x29] = std::bind(&sharpsm83::sra_c, this);
     CB_opcode_table[0x2A] = std::bind(&sharpsm83::sra_d, this);
@@ -2251,7 +2248,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x35] = std::bind(&sharpsm83::swap_l, this);
     CB_opcode_table[0x36] = std::bind(&sharpsm83::swap_memhl, this);
     CB_opcode_table[0x37] = std::bind(&sharpsm83::swap_a, this);
-
     CB_opcode_table[0x38] = std::bind(&sharpsm83::srl_b, this);
     CB_opcode_table[0x39] = std::bind(&sharpsm83::srl_c, this);
     CB_opcode_table[0x3A] = std::bind(&sharpsm83::srl_d, this);
@@ -2269,7 +2265,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x45] = std::bind(&sharpsm83::bit_0_l, this);
     CB_opcode_table[0x46] = std::bind(&sharpsm83::bit_0_memhl, this);
     CB_opcode_table[0x47] = std::bind(&sharpsm83::bit_0_a, this);
-
     CB_opcode_table[0x48] = std::bind(&sharpsm83::bit_1_b, this);
     CB_opcode_table[0x49] = std::bind(&sharpsm83::bit_1_c, this);
     CB_opcode_table[0x4A] = std::bind(&sharpsm83::bit_1_d, this);
@@ -2287,7 +2282,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x55] = std::bind(&sharpsm83::bit_2_l, this);
     CB_opcode_table[0x56] = std::bind(&sharpsm83::bit_2_memhl, this);
     CB_opcode_table[0x57] = std::bind(&sharpsm83::bit_2_a, this);
-
     CB_opcode_table[0x58] = std::bind(&sharpsm83::bit_3_b, this);
     CB_opcode_table[0x59] = std::bind(&sharpsm83::bit_3_c, this);
     CB_opcode_table[0x5A] = std::bind(&sharpsm83::bit_3_d, this);
@@ -2305,7 +2299,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x65] = std::bind(&sharpsm83::bit_4_l, this);
     CB_opcode_table[0x66] = std::bind(&sharpsm83::bit_4_memhl, this);
     CB_opcode_table[0x67] = std::bind(&sharpsm83::bit_4_a, this);
-
     CB_opcode_table[0x68] = std::bind(&sharpsm83::bit_5_b, this);
     CB_opcode_table[0x69] = std::bind(&sharpsm83::bit_5_c, this);
     CB_opcode_table[0x6A] = std::bind(&sharpsm83::bit_5_d, this);
@@ -2323,7 +2316,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x75] = std::bind(&sharpsm83::bit_6_l, this);
     CB_opcode_table[0x76] = std::bind(&sharpsm83::bit_6_memhl, this);
     CB_opcode_table[0x77] = std::bind(&sharpsm83::bit_6_a, this);
-
     CB_opcode_table[0x78] = std::bind(&sharpsm83::bit_7_b, this);
     CB_opcode_table[0x79] = std::bind(&sharpsm83::bit_7_c, this);
     CB_opcode_table[0x7A] = std::bind(&sharpsm83::bit_7_d, this);
@@ -2340,8 +2332,7 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x84] = std::bind(&sharpsm83::res_0_h, this);
     CB_opcode_table[0x85] = std::bind(&sharpsm83::res_0_l, this);
     CB_opcode_table[0x86] = std::bind(&sharpsm83::res_0_memhl, this);
-    CB_opcode_table[0x87] = std::bind(&sharpsm83::res_0_a, this);
-    
+    CB_opcode_table[0x87] = std::bind(&sharpsm83::res_0_a, this); 
     CB_opcode_table[0x88] = std::bind(&sharpsm83::res_1_b, this);
     CB_opcode_table[0x89] = std::bind(&sharpsm83::res_1_c, this);
     CB_opcode_table[0x8A] = std::bind(&sharpsm83::res_1_d, this);
@@ -2359,7 +2350,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0x95] = std::bind(&sharpsm83::res_2_l, this);
     CB_opcode_table[0x96] = std::bind(&sharpsm83::res_2_memhl, this);
     CB_opcode_table[0x97] = std::bind(&sharpsm83::res_2_a, this);
-
     CB_opcode_table[0x98] = std::bind(&sharpsm83::res_3_b, this);
     CB_opcode_table[0x99] = std::bind(&sharpsm83::res_3_c, this);
     CB_opcode_table[0x9A] = std::bind(&sharpsm83::res_3_d, this);
@@ -2377,7 +2367,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0xA5] = std::bind(&sharpsm83::res_4_l, this);
     CB_opcode_table[0xA6] = std::bind(&sharpsm83::res_4_memhl, this);
     CB_opcode_table[0xA7] = std::bind(&sharpsm83::res_4_a, this);
-
     CB_opcode_table[0xA8] = std::bind(&sharpsm83::res_5_b, this);
     CB_opcode_table[0xA9] = std::bind(&sharpsm83::res_5_c, this);
     CB_opcode_table[0xAA] = std::bind(&sharpsm83::res_5_d, this);
@@ -2395,7 +2384,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0xB5] = std::bind(&sharpsm83::res_6_l, this);
     CB_opcode_table[0xB6] = std::bind(&sharpsm83::res_6_memhl, this);
     CB_opcode_table[0xB7] = std::bind(&sharpsm83::res_6_a, this);
-
     CB_opcode_table[0xB8] = std::bind(&sharpsm83::res_7_b, this);
     CB_opcode_table[0xB9] = std::bind(&sharpsm83::res_7_c, this);
     CB_opcode_table[0xBA] = std::bind(&sharpsm83::res_7_d, this);
@@ -2413,7 +2401,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0xC5] = std::bind(&sharpsm83::set_0_l, this);
     CB_opcode_table[0xC6] = std::bind(&sharpsm83::set_0_memhl, this);
     CB_opcode_table[0xC7] = std::bind(&sharpsm83::set_0_a, this);
-
     CB_opcode_table[0xC8] = std::bind(&sharpsm83::set_1_b, this);
     CB_opcode_table[0xC9] = std::bind(&sharpsm83::set_1_c, this);
     CB_opcode_table[0xCA] = std::bind(&sharpsm83::set_1_d, this);
@@ -2431,7 +2418,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0xD5] = std::bind(&sharpsm83::set_2_l, this);
     CB_opcode_table[0xD6] = std::bind(&sharpsm83::set_2_memhl, this);
     CB_opcode_table[0xD7] = std::bind(&sharpsm83::set_2_a, this);
-
     CB_opcode_table[0xD8] = std::bind(&sharpsm83::set_3_b, this);
     CB_opcode_table[0xD9] = std::bind(&sharpsm83::set_3_c, this);
     CB_opcode_table[0xDA] = std::bind(&sharpsm83::set_3_d, this);
@@ -2449,7 +2435,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0xE5] = std::bind(&sharpsm83::set_4_l, this);
     CB_opcode_table[0xE6] = std::bind(&sharpsm83::set_4_memhl, this);
     CB_opcode_table[0xE7] = std::bind(&sharpsm83::set_4_a, this);
-
     CB_opcode_table[0xE8] = std::bind(&sharpsm83::set_5_b, this);
     CB_opcode_table[0xE9] = std::bind(&sharpsm83::set_5_c, this);
     CB_opcode_table[0xEA] = std::bind(&sharpsm83::set_5_d, this);
@@ -2467,7 +2452,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0xF5] = std::bind(&sharpsm83::set_6_l, this);
     CB_opcode_table[0xF6] = std::bind(&sharpsm83::set_6_memhl, this);
     CB_opcode_table[0xF7] = std::bind(&sharpsm83::set_6_a, this);
-
     CB_opcode_table[0xF8] = std::bind(&sharpsm83::set_7_b, this);
     CB_opcode_table[0xF9] = std::bind(&sharpsm83::set_7_c, this);
     CB_opcode_table[0xFA] = std::bind(&sharpsm83::set_7_d, this);
@@ -2476,7 +2460,6 @@ void sharpsm83::initialize_cbopcodes()
     CB_opcode_table[0xFD] = std::bind(&sharpsm83::set_7_l, this);
     CB_opcode_table[0xFE] = std::bind(&sharpsm83::set_7_memhl, this);
     CB_opcode_table[0xFF] = std::bind(&sharpsm83::set_7_a, this);
-
 }
 
 //##############################################################################
