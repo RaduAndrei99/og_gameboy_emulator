@@ -20,10 +20,10 @@ int main()
     }
 
     // OxCB instructions
-    // for(int i=0;i<0xF + 1; ++i)
-    // {
-    //     sm83.execute_0xCB_instruction(i);
-    // }
+    for(int i=0;i<0xFF + 1; ++i)
+    {
+        sm83.execute_0xCB_instruction(i);
+    }
 
     sm83.printRegisters();
     

@@ -6,6 +6,7 @@ sharpsm83::sharpsm83()
 {
     mem.init_memory();
     initialize_opcodes();
+    initialize_cbopcodes();
 }
 //##############################################################################
 sharpsm83::~sharpsm83() = default;
@@ -96,11 +97,14 @@ void sharpsm83::execute(uint8_t opcode)
 {
     if(opcode == 0xCB)
     {
+        fetch_data(PC.b0_15 + 1);
+        PC.b0_15 += 1;
+
+        opcode = fetched_data;
         execute_0xCB_instruction(opcode);
     }
     else
-    {
-        // TODO: fetch next instruction
+    {   
         execute_normal_instruction(opcode);
     }
 }
