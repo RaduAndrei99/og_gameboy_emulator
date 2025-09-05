@@ -8,7 +8,7 @@
 struct gb_wram
 {
     // 8 kb of main RAM
-    uint8_t data[MAX_MEMORY_SIZE];
+    uint8_t* data = new uint8_t[MAX_MEMORY_SIZE];
 
     // first chip enable, active low
     bool _ce;
@@ -24,6 +24,11 @@ struct gb_wram
 
     void print_memory_layout();
     void init_memory();
+
+    ~gb_wram()
+    {
+        delete[] data;
+    }
 };
 
 #endif
