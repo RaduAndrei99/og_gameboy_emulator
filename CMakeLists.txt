@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(UTILS)
 add_subdirectory(MEMORY)
 add_subdirectory(CARTRIDGE)
+add_subdirectory(BUS)
 add_subdirectory(CPU)
 
 add_subdirectory(GAMEBOY)

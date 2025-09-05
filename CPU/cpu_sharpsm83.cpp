@@ -4,12 +4,16 @@
 //##############################################################################
 sharpsm83::sharpsm83()
 {
-    mem.init_memory();
     initialize_opcodes();
     initialize_cbopcodes();
 }
 //##############################################################################
 sharpsm83::~sharpsm83() = default;
+//##############################################################################
+void sharpsm83::set_bus(const std::shared_ptr<gb_bus>& b)
+{
+    bus = b;
+}
 //##############################################################################
 bool sharpsm83::get_zero_flag()
 {
@@ -85,20 +89,32 @@ void sharpsm83::complement_carry_flag()
 //##############################################################################
 void sharpsm83::fetch_data(const uint16_t& address)
 {  
-    fetched_data = mem.read(address);
+    fetched_data = bus->bus_read(address);
 }
 //##############################################################################
 void sharpsm83::write_data(const uint16_t& address, const uint8_t& data)
 {
-    mem.write(address, data);
+    bus->bus_write(address, data);
+}
+//##############################################################################
+void sharpsm83::tick()
+{
+    if(is_halted) return;
+
+    fetch_data(PC.b0_15);
+    uint8_t opcode = fetched_data;
+
+    std::cout<<"Executing: 0x"<<std::hex<<static_cast<int>(opcode) << " from 0x"<<std::hex<<static_cast<int>(PC.b0_15)<<'\n';
+
+    execute(opcode);
 }
 //##############################################################################
 void sharpsm83::execute(uint8_t opcode) 
 {
     if(opcode == 0xCB)
     {
-        fetch_data(PC.b0_15 + 1);
         PC.b0_15 += 1;
+        fetch_data(PC.b0_15);
 
         opcode = fetched_data;
         execute_0xCB_instruction(opcode);
@@ -111,8 +127,6 @@ void sharpsm83::execute(uint8_t opcode)
 //##############################################################################
 void sharpsm83::execute_normal_instruction(uint8_t opcode)
 {
-    std::cout<<"Executing: 0x"<<std::hex<<static_cast<int>(opcode)<<'\n';
-
     if(opcode_table[opcode])
     {
         opcode_table[opcode]();
@@ -125,8 +139,6 @@ void sharpsm83::execute_normal_instruction(uint8_t opcode)
 //##############################################################################
 void sharpsm83::execute_0xCB_instruction(uint8_t opcode)
 {
-    std::cout<<"Executing: 0xCB 0x"<<std::hex<<static_cast<int>(opcode)<<'\n';
-
     if(CB_opcode_table[opcode])
     {
         CB_opcode_table[opcode]();
@@ -139,7 +151,8 @@ void sharpsm83::execute_0xCB_instruction(uint8_t opcode)
 //##############################################################################
 void sharpsm83::execute_nop()
 {
-    ///???
+    emulate_cycles(1);
+    PC.b0_15 += 1;
 }
 //##############################################################################
 void sharpsm83::execute_halt()
@@ -247,9 +260,9 @@ void sharpsm83::jp(const uint16_t& address)
 //##############################################################################
 void sharpsm83::jp(bool cond)
 {
-    fetch_data(PC.b0_15);
-    uint8_t low = fetched_data;
     fetch_data(PC.b0_15 + 1);
+    uint8_t low = fetched_data;
+    fetch_data(PC.b0_15 + 2);
     uint8_t high = fetched_data;
 
     uint16_t address = (high << 0x8) | low;
@@ -261,9 +274,9 @@ void sharpsm83::jp(bool cond)
 //##############################################################################
 void sharpsm83::call(bool cond)
 {
-    fetch_data(PC.b0_15);
-    uint8_t low = fetched_data;
     fetch_data(PC.b0_15 + 1);
+    uint8_t low = fetched_data;
+    fetch_data(PC.b0_15 + 2);
     uint8_t high = fetched_data;
 
     uint16_t address = (high << 0x8) | low;
@@ -2467,7 +2480,7 @@ void sharpsm83::initialize_cbopcodes()
 }
 
 //##############################################################################
-void sharpsm83::printRegisters()
+void sharpsm83::print_registers()
 {
     std::cout<<"##############################################################################"<<'\n';
     std::cout<<"AF: 0x" << std::hex<<static_cast<int>(AF.b0_15)<<'\n';
@@ -2486,15 +2499,16 @@ void sharpsm83::printRegisters()
 //##############################################################################
 void sharpsm83::reset()
 {
-    PC.b0_15 = 0x00;
+    PC.b0_15 = 0x0100;
 
     AF.b0_15 = 0xAA;
     BC.b0_15 = 0x00;
     DE.b0_15 = 0x00;
     HL.b0_15 = 0x00;
-    PC.b0_15 = 0x00;
     SP.b0_15 = 0x00;
 
     fetched_data = 0x0;
+
+    is_halted = false;
 }
 //##############################################################################

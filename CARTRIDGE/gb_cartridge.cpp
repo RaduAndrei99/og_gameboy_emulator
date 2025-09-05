@@ -1,7 +1,7 @@
 #include "gb_cartridge.hpp"
 #include "../UTILS/file_io.hpp"
 
-void gb_cartridge::loadCartridge(const std::string& path)
+void gb_cartridge::load_cartridge(const std::string& path)
 {
     rawData = read_file_to_vector(path);
 
@@ -10,12 +10,12 @@ void gb_cartridge::loadCartridge(const std::string& path)
 
     std::cout<<"Loaded "<< path<<" with "<<rawData.size()<<" bytes."<<'\n';
 
-    loadInfo();
+    load_info();
 
-    printInfo();
+    print_info();
 }
 
-void gb_cartridge::loadInfo()
+void gb_cartridge::load_info()
 {
     info.title = std::string(rawData.begin() + cartridge_header::TITLE, 
                              rawData.begin() + cartridge_header::TITLE_END);
@@ -130,7 +130,7 @@ std::string namecode_to_old_licensees(uint8_t code)
     return "Unknown";
 }
 
-void gb_cartridge::printInfo()
+void gb_cartridge::print_info()
 {
     std::cout<<"Entry point: "
     <<"0x"<<std::hex<<static_cast<int>(rawData[0x0100]) << ' '
@@ -170,4 +170,14 @@ void gb_cartridge::printInfo()
     std::cout<<"Header checksum: 0x"<<std::hex<<static_cast<int>(info.header_checksum)<<'\n';
     std::cout<<"Global checksum: 0x"<<std::hex<<static_cast<int>(info.global_checksum)<<'\n';
 
+}
+
+uint8_t gb_cartridge::read(const uint16_t& address)
+{
+    return rawData[address];
+}
+
+void gb_cartridge::write(const uint16_t& address, const uint8_t& data)
+{
+    rawData[address] = data;
 }
