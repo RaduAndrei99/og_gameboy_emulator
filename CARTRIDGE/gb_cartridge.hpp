@@ -350,12 +350,15 @@ private:
     std::vector<uint8_t> rawData;
     cartridge_info info;
 
-    void loadInfo();
+    void load_info();
 public:
 
-    void loadCartridge(const std::string& path);
+    void load_cartridge(const std::string& path);
 
-    void printInfo();
+    void print_info();
+
+    uint8_t read(const uint16_t& address);
+    void write(const uint16_t& address, const uint8_t& data);
 };
 
 #endif

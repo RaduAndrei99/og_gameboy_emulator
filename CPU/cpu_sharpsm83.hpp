@@ -6,7 +6,7 @@
 #include <functional>
 #include <array>
 
-#include "../MEMORY/gb_wram.hpp"
+#include "../BUS/gb_bus.hpp"
 #include "../CARTRIDGE/gb_cartridge.hpp"
 
 #define CPU_BITS 8
@@ -59,6 +59,10 @@ private:
     // cpu chip enable  
     bool ce;
 
+    std::shared_ptr<gb_bus> bus;
+
+    uint8_t fetched_data;
+
     // getters for the flags
     bool get_zero_flag();
     void set_zero_flag(bool val);
@@ -75,8 +79,6 @@ private:
     void set_carry_flag();
     // cpu instructions to set complement flag
     void complement_carry_flag();
-
-    uint8_t fetched_data;
 
     void fetch_data(const uint16_t& address);
     void write_data(const uint16_t& address, const uint8_t& data);
@@ -813,17 +815,19 @@ private:
     void initialize_cbopcodes();
 
     void emulate_cycles(int cycles);
-
-    gb_wram mem;
 public:
     sharpsm83();
     ~sharpsm83();
+
+    void set_bus(const std::shared_ptr<gb_bus>& b);
+
+    void tick();
 
     void execute(uint8_t opcode);
     void execute_normal_instruction(uint8_t opcode);
     void execute_0xCB_instruction(uint8_t opcode);
 
-    void printRegisters();
+    void print_registers();
 
     void reset();
 };
