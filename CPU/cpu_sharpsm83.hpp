@@ -34,8 +34,8 @@ private:
     {
         struct 
         {
-            reg8 Hi;
             reg8 Lo;
+            reg8 Hi;
         };
         uint16_t b0_15;
     };
