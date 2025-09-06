@@ -1,5 +1,6 @@
 #include<iostream>
 #include "cpu_sharpsm83.hpp"
+#include "opcode_to_string.hpp"
 
 //##############################################################################
 sharpsm83::sharpsm83()
@@ -104,8 +105,6 @@ void sharpsm83::tick()
     fetch_data(PC.b0_15);
     uint8_t opcode = fetched_data;
 
-    std::cout<<"Executing: 0x"<<std::hex<<static_cast<int>(opcode) << " from 0x"<<std::hex<<static_cast<int>(PC.b0_15)<<'\n';
-
     execute(opcode);
 }
 //##############################################################################
@@ -118,9 +117,13 @@ void sharpsm83::execute(uint8_t opcode)
 
         opcode = fetched_data;
         execute_0xCB_instruction(opcode);
+
+        std::cout<<"->"<<std::hex<<static_cast<int>(PC.b0_15)<<": "<<cbOpcodeTable[opcode]<<" ["<<"$CB"<<std::hex<<static_cast<int>(opcode)<<']'<<'\n';
     }
     else
     {   
+        std::cout<<"->"<<std::hex<<static_cast<int>(PC.b0_15)<<": "<<opcodeTable[opcode]<<" ["<<std::hex<<static_cast<int>(opcode)<<']'<<'\n';
+
         execute_normal_instruction(opcode);
     }
 }
