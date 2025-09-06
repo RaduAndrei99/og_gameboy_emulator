@@ -240,11 +240,11 @@ void sharpsm83::rr(reg8& reg)
 void sharpsm83::jr(bool cond)
 {
     fetch_data(PC.b0_15 + 1);
-    int16_t offset = fetched_data;
+    int8_t offset = fetched_data;
 
-    uint16_t old_pc =  PC.b0_15;
+    uint16_t old_pc = PC.b0_15;
 
-    uint16_t new_pc = (uint16_t)(old_pc + offset);
+    uint16_t new_pc = (uint16_t)(old_pc + offset);// ???
 
     emulate_cycles(3);
     
