@@ -56,12 +56,19 @@ private:
     bool is_halted;
     bool interrupts_enabled;
 
+    bool exit_on_infinite_jr = true;
+
+    uint16_t last_opcode;
+
     // cpu chip enable  
     bool ce;
 
     std::shared_ptr<gb_bus> bus;
 
     uint8_t fetched_data;
+
+    void enable_interrupts();
+    void disable_interrupts();
 
     // getters for the flags
     bool get_zero_flag();
@@ -70,7 +77,7 @@ private:
     bool get_subtraction_flag();
     void set_subtraction_flag(bool val);
 
-    bool getHalfCarryFlag();
+    bool get_half_carry_flag();
     void set_half_carry_flag(bool val);
 
     bool get_carry_flag();
@@ -102,8 +109,10 @@ private:
     void call(bool cond);
     void call(const uint16_t& address);
 
+    void rst(const uint16_t& address);
+
     // generic decimal adjust
-    void da(reg8& reg);
+    void da(reg8& r);
 
     // generic complement register
     void complement(reg8& reg);
@@ -118,6 +127,14 @@ private:
 
     void ldh_to_address(const reg8& reg);
     void ldh_to_address(const reg8& to, const reg8& reg);
+    void ldh_from_address(reg8& reg);
+    void ldh_from_address(reg8& to, const reg8& reg);
+
+    void ld_hl_reg_e8(const reg16& reg);
+
+    void ld_a_memimm16_op();
+
+    void ld_sp_hl_op();
 
     // writes data from address
     void ld_from_address(uint8_t& reg, const uint16_t& address);
@@ -171,9 +188,11 @@ private:
 
     void cp_op(uint8_t& op1, uint8_t& op2);
     void cp_op_from_address(uint8_t& op1, uint16_t& address);
+    void cp_op(reg8& reg);
 
     void rlc_param(reg8& reg);
 
+    void ret_op();
     void ret_condition(bool condition);
     void reti_op();
     void rlcmem_param(uint16_t& address);
@@ -218,12 +237,14 @@ private:
 
     void setmem_param(uint8_t bit, uint16_t& address);
 
-    void stack_push(reg16& reg);
-    void stack_pop(reg16& reg);
+    void stack_push(const uint16_t& value);
+    void stack_pop(uint16_t& value);
 
     void pop(reg16& reg);
     void push(reg16& reg);
 
+    void pop_af_op();
+    void push_af_op();
 
     // instructions
     // 0x00 - 0x0F
@@ -259,7 +280,7 @@ private:
     void dec_de();
     void inc_e();
     void dec_e();
-    void ld_e_immm8();
+    void ld_e_imm8();
     void rra();
 
     // 0x20 - 0x2F
@@ -495,6 +516,24 @@ private:
     void op_0xED();
     void xor_a_imm8();
     void rst_0x28();
+
+    // OxF0 - 0xFF
+    void ldh_a_memimm8();
+    void pop_af();
+    void ldh_a_memc();
+    void di();
+    void op_0xF4();
+    void push_af();
+    void or_a_imm8();
+    void rst_0x30();
+    void ld_hl_sp_e8();
+    void ld_sp_hl();
+    void ld_a_memimm16();
+    void ei();
+    void op_0xFC();
+    void op_0xFD();
+    void cp_a_imm8();
+    void rst_0x38();
 
     // CB prefixed instructions
 
@@ -826,6 +865,9 @@ public:
     void execute(uint8_t opcode);
     void execute_normal_instruction(uint8_t opcode);
     void execute_0xCB_instruction(uint8_t opcode);
+
+    const uint16_t& get_last_opcode();
+    const uint16_t& get_current_adrress();
 
     void print_registers();
 

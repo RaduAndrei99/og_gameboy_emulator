@@ -34,15 +34,24 @@ void gameboy::run()
     cpu.reset();
 
     int count_nop = 0;
+    bool valid = false;
 
     while(is_running)
     {
-        cpu.tick();
+        // if(cpu.get_current_adrress() == 0xc46b )
+        // {         
+        //     valid = true;
 
-        // int n;
-        // std::cin >> n;
-        // if(n == 0)
-        //     cpu.print_registers();
+        //     int n;
+        //     std::cin >> n;
+        //     if(n == 0)
+        //         cpu.print_registers();
+            
+        //     std::cin >> n;
+
+        // }
+
+        cpu.tick();
     }
 }
 

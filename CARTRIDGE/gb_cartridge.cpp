@@ -62,9 +62,8 @@ void gb_cartridge::load_info()
     auto validate_global_checksum = [this](std::vector<uint8_t>& rawData, uint16_t value)
     {
         uint16_t checksum = 0;
-        for (uint16_t address = 0; address<rawData.size(); address++) {
+        for (int address = 0; address<rawData.size(); address++) {
             if(address == 0x014E || address == 0x014F ) continue;
-            
             checksum = checksum + rawData[address];
         }
 

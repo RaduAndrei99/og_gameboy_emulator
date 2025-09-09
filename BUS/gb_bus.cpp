@@ -3,63 +3,159 @@
 
 uint8_t gb_bus::bus_read(const uint16_t& address)
 {
-    // ROM read
-    if(address < 0x8000) return cartridge->read(address);
+    // cartridge read
+    if(address < 0x8000)
+    {
+        return cartridge->read(address);
+    }
 
-    if(0xC000 <= address && address <= 0xDFFF) return mem.read(address);
+    // VRAM read
+    // TODO
+    if(0x8000 <= address && address <= 0x9FFF) return 0xFF;
 
-    // Nintendo sends a lawyer if you access this range
-    if(0xE000 <= address && address <= 0xFDFF) exit(-1);
-    if(0xFEA0 <= address && address <= 0xFEFF) exit(-1);
+    // external RAM read
+    if(0xA000 <= address && address <= 0xBFFF)  return cartridge->read(address);
 
+    // internal RAM read
+    if(0xC000 <= address && address <= 0xDFFF) return mem.read_main(address - 0xC000);
 
-    if (address == 0xFF01) return serial_data;
-    if (address == 0xFF02) return serial_control;
+    // mirrored RAM
+    // Accessing this range may cause a lawsuit from Nintendo.
+    if(0xE000 <= address && address <= 0xFDFF) 
+    {
+        return mem.read_main(address - 0x2000);
+    }
 
-    std::cout<<"[READ] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
+    // OAM read
+    if(0xFE00 <= address && address <= 0xFE9F) 
+    {
+        // TODO
+        return 0xFF;
+    }
+
+    // Not usable memory area
+    if(0xFEA0 <= address && address <= 0xFEFF) 
+    {
+        std::cout<<"[READ] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
+
+        return 0xFF;
+    }
+
+    // I/O registers
+    if(0xFF00 <= address && address <= 0xFF7F)
+    {
+        //std::cout<<"[READ] IO: "<<std::hex<<address<<'\n';
+        if (address == 0xFF01) return serial_data;
+        if (address == 0xFF02) return serial_control;
+
+        // TODO
+        return 0xFF;
+    };
+
+    // HRAM
+    if(0xFF80 <= address && address <= 0xFFFE)  return mem.read_hram(address - 0xFF80);
+
+    // Interrupt enable register
+    if(address == 0xFFFF) return 0xFF; // TODO
+
+    std::cout<<"[READ end] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
 
     exit(-1);
 }
 void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
 {
-    // ROM write
+    // cartridge write
     if(address < 0x8000)
     {
         cartridge->write(address, data);
+
+        return;
     }
-    else if(0xC000 <= address && address <= 0xDFFF) 
+
+    // VRAM write
+    if(0x8000 <= address && address <= 0x9FFF) 
     {
-        mem.write(address, data);
+        // TODO
+        return;
     }
-    // Nintendo sends a lawyer if you access this range
-    else if(0xE000 <= address && address <= 0xFDFF)
+
+    // external RAM write
+    if(0xA000 <= address && address <= 0xBFFF)
     {
-        exit(-1);
+        cartridge->write(address, data);
+        return;
     }
-    else if(0xFEA0 <= address && address <= 0xFEFF) 
+
+    // internal RAM write
+    if(0xC000 <= address && address <= 0xDFFF) 
     {
-        exit(-1);
+        mem.write_main(address - 0xC000, data);
+        return;
     }
-    else if (address == 0xFF01) // SB - serial data
-    { 
-        serial_data = data;
-    }
-    else if (address == 0xFF02) // SC - serial control
+
+    // Accessing this range may cause a lawsuit from Nintendo.
+    // Mirrored RAM
+    if(0xE000 <= address && address <= 0xFDFF)
     {
-        if (data == 0x81) 
-        {
-            // Blargg’s test: print immediately
-            std::cout << static_cast<char>(serial_data);
-            std::cout.flush();
-        }
-        serial_control = data;
+        mem.write_main(address - 0x2000, data);
+        return;
     }
-    else
+
+    // OAM write
+    if(0xFE00 <= address && address <= 0xFE9F)
+    {
+        // TODO
+        return;
+    }
+
+    // Not usable memory area)
+    if(0xFEA0 <= address && address <= 0xFEFF) 
     {
         std::cout<<"[WRITE] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
-
-        exit(-1);
+        //exit(-1);
     }
+
+    // I/O registers
+    if(0xFF00 <= address && address <= 0xFF7F)
+    {
+        //std::cout<<"[WRITE] IO: "<<std::hex<<address<<'\n';
+
+        if (address == 0xFF01) // SB - serial data
+        { 
+            serial_data = data;
+        }
+        else if (address == 0xFF02) // SC - serial control
+        {
+            if (data == 0x81) 
+            {
+                // Blargg’s test: print immediately
+                std::cout << static_cast<char>(serial_data);
+            }
+            serial_control = data;
+        }
+
+        // TODO
+        return;
+    }
+
+    // HRAM
+    if(0xFF80 <= address && address <= 0xFFFE)
+    {
+        mem.write_hram(address - 0xFF80, data);
+
+        return;
+    }
+
+    // Interrupt enable register
+    if(address == 0xFFFF)
+    {
+        // TODO
+        return;
+    }
+    
+    std::cout<<"[WRITE] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
+
+    exit(-1);
 }
 void gb_bus::set_cartridge(const std::shared_ptr<gb_cartridge>& c)
 {
