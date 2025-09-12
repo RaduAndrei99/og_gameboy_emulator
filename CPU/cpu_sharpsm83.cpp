@@ -468,6 +468,26 @@ void sharpsm83::ldh_to_address(const reg8& to, const reg8& reg)
     PC.b0_15 += 1;
 }
 //##############################################################################
+void sharpsm83::ld_sp()
+{
+    fetch_data(PC.b0_15 + 1);
+    uint16_t lo = fetched_data;
+    emulate_cycles(1);
+
+    fetch_data(PC.b0_15 + 2);
+    uint16_t hi = fetched_data;
+    emulate_cycles(1);
+
+    uint16_t address = (hi << 8) | lo;
+    emulate_cycles(1);
+
+    write_data(address, SP.b0_15);
+
+    emulate_cycles(2);
+
+    PC.b0_15 += 3;
+}
+//##############################################################################
 void sharpsm83::ldh_from_address(reg8& reg)
 {
     fetch_data(PC.b0_15 + 1);
