@@ -1,2 +1,4 @@
 build
 .vscode
+ROMs/*.gb
+ROMs/test/cpu_instrs/source/*

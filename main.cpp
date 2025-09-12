@@ -1,31 +1,25 @@
-#include "CPU/cpu_sharpsm83.hpp"
-#include <vector>
+#include<signal.h>
 
-int main()
+#include "GAMEBOY/gameboy.hpp"
+
+int main(int argc, char *argv[])
 {
-    sharpsm83 sm83;
+    gameboy gb;
+    
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/01-special.gb");
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/02-interrupts.gb");
+    gb.load_cartridge("../ROMs/test/cpu_instrs/individual/03-op-sp,hl.gb");
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/04-op-r,imm.gb");
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/05-op-rp.gb");
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/06-ld-r,r.gb");
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/07-jr,jp,call,ret,rst.gb");
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/08-misc-instrs.gb");
 
-    std::vector<uint8_t> instructions = {
-        0x00, 0x01, 0x02, 0x03, 
-        0x04, 0x05, 0x06, 0x07, 
-        0x08, 0x09, 0x0A, 0x0B,
-        0x0C, 0x0D, 0x0E, 0x0F};
 
-    sm83.reset();
+    //gb.load_cartridge("../ROMs/test/cpu_instrs/cpu_instrs.gb");
+    //gb.load_cartridge("../ROMs/tetris.gb");
 
-    // normal instructions
-    for(int i=0;i<0xF0 + 1; ++i)
-    {
-        sm83.execute(i);
-    }
-
-    // OxCB instructions
-    for(int i=0;i<0xFF + 1; ++i)
-    {
-        sm83.execute_0xCB_instruction(i);
-    }
-
-    sm83.printRegisters();
+    gb.run();
     
     return 0;
 }
