@@ -104,16 +104,20 @@ void sharpsm83::complement_carry_flag()
 //##############################################################################
 void sharpsm83::fetch_data(const uint16_t& address)
 {  
-    fetched_data = bus->bus_read(address);
+    if(bus)
+        fetched_data = bus->bus_read(address);
 }
 //##############################################################################
 void sharpsm83::write_data(const uint16_t& address, const uint8_t& data)
 {
-    bus->bus_write(address, data);
+    if(bus)
+        bus->bus_write(address, data);
 }
 //##############################################################################
 void sharpsm83::tick()
 {
+    handle_interrupts();
+
     if(is_halted) return;
 
     fetch_data(PC.b0_15);
@@ -401,6 +405,9 @@ void sharpsm83::complement(reg8& reg)
 {
     reg.b0_7 = ~reg.b0_7;
 
+    set_subtraction_flag(true); // N flag
+    set_half_carry_flag(true); // H flag
+
     emulate_cycles(1);
     PC.b0_15 += 1;
 }
@@ -481,7 +488,8 @@ void sharpsm83::ld_sp()
     uint16_t address = (hi << 8) | lo;
     emulate_cycles(1);
 
-    write_data(address, SP.b0_15);
+    write_data(address, SP.b0_15 & 0xFF);        // low byte
+    write_data(address + 1, (SP.b0_15 >> 8));   // high byte
 
     emulate_cycles(2);
 
@@ -822,7 +830,7 @@ void sharpsm83::adc(reg8& reg)
 
     uint16_t result = reg.b0_7 + fetched_data + old_carry;
 
-    set_zero_flag(result == 0); // Z FLAG
+    set_zero_flag((result & 0xFF) == 0); // Z FLAG
     set_subtraction_flag(false); // N flag
     set_half_carry_flag(((reg.b0_7 & 0xF) + (fetched_data & 0xF) + old_carry) > 0xF); // H flag ???
     set_carry_flag(result > UINT8_MAX); // C flag
@@ -870,51 +878,53 @@ void sharpsm83::sub_from_address(uint8_t& op1, uint16_t& address)
 void sharpsm83::sub(reg8& reg)
 {
     fetch_data(PC.b0_15 + 1);
-    uint8_t result = reg.b0_7 - fetched_data;
+    uint8_t value = fetched_data;
+
+    uint8_t result = reg.b0_7 - value;
 
     set_zero_flag(result == 0); // Z FLAG
     set_subtraction_flag(true); // N flag
-    set_half_carry_flag((fetched_data & 0xF) > (reg.b0_7 & 0xF)); // H flag ???
-    set_carry_flag(fetched_data > reg.b0_7); // C flag
+    set_half_carry_flag((reg.b0_7 & 0xF) < (value & 0xF)); // H flag
+    set_carry_flag(value > reg.b0_7);           // C flag
 
     reg.b0_7 = result;
 
     emulate_cycles(2);
 
     PC.b0_15 += 2;
-
 }
 //##############################################################################
 void sharpsm83::sbc(uint8_t& op1, uint8_t& op2)
 {
-    bool old_carry = get_carry_flag();
-    uint16_t sum = op2 + (old_carry ? 1 : 0);
+    bool carry = get_carry_flag();
 
-    uint8_t result = op1 - sum;
+    int result_full = op1 - op2 - carry;
+    uint8_t result = result_full & 0xFF;
 
     set_zero_flag(result == 0);
     set_subtraction_flag(true);
-    set_half_carry_flag((op1 & 0xF) < (sum & 0xF)); // borrow from bit 4
-    set_carry_flag(sum > op1);                       // borrow from bit 8
+    set_half_carry_flag(((op1 & 0xf) - (op2 & 0xf) - carry) < 0);
+    set_carry_flag(result_full < 0);
 
     op1 = result;
 
-    emulate_cycles(1);
+    emulate_cycles(2);
     PC.b0_15 += 1;
 }
 //##############################################################################
 void sharpsm83::sbc_from_address(uint8_t& op1, uint16_t& address)
 {
     fetch_data(address);
-    bool old_carry = get_carry_flag();
-    uint16_t sum = fetched_data + (old_carry ? 1 : 0);
+    bool carry = get_carry_flag();
+    uint8_t value = fetched_data;
 
-    uint8_t result = op1 - sum;
+    int result_full = op1 - value -carry;
+    uint8_t result = result_full & 0xFF;
 
     set_zero_flag(result == 0);
     set_subtraction_flag(true);
-    set_half_carry_flag((op1 & 0xF) < (sum & 0xF));
-    set_carry_flag(sum > op1);
+    set_half_carry_flag(((op1 & 0xf) - (value & 0xf) - carry) < 0);
+    set_carry_flag(result_full < 0);
 
     op1 = result;
 
@@ -925,15 +935,16 @@ void sharpsm83::sbc_from_address(uint8_t& op1, uint16_t& address)
 void sharpsm83::sbc(reg8& reg)
 {
     fetch_data(PC.b0_15 + 1);
-    bool old_carry = get_carry_flag();
-    uint16_t sum = fetched_data + (old_carry ? 1 : 0);
+    bool carry = get_carry_flag();
+    uint8_t value = fetched_data;
 
-    uint8_t result = reg.b0_7 - sum;
+    int result_full = reg.b0_7 - value - carry;
+    uint8_t result = result_full & 0xFF;
 
     set_zero_flag(result == 0);
     set_subtraction_flag(true);
-    set_half_carry_flag((reg.b0_7 & 0xF) < (sum & 0xF)); // borrow from bit 4
-    set_carry_flag(sum > reg.b0_7);                       // borrow from bit 8
+    set_half_carry_flag(((reg.b0_7 & 0xf) - (value & 0xf) - carry) < 0);
+    set_carry_flag(result_full < 0);
 
     reg.b0_7 = result;
 
@@ -1224,7 +1235,7 @@ void sharpsm83::ret_condition(bool condition)
     {
         emulate_cycles(2);
 
-        PC.b0_15 += 2;
+        PC.b0_15 += 1;
     }
 }
 //##############################################################################
@@ -1835,7 +1846,7 @@ void sharpsm83::jp_c_imm16() { jp(get_carry_flag()); } // 0xDA
 void sharpsm83::op_0xDB() { } // 0xDB
 void sharpsm83::call_c_a16() { call(get_carry_flag()); } // 0xDC
 void sharpsm83::op_0xDD() { } // 0xDD
-void sharpsm83::sbc_a_imm8() { sbc(AF.Hi); }// 0xDD
+void sharpsm83::sbc_a_imm8() { sbc(AF.Hi); }// 0xDE
 void sharpsm83::rst_0x18() { rst( (uint16_t)0x0018 ); } // 0xDF
 //##############################################################################
 void sharpsm83::ldh_memimm8_a() { ldh_to_address(AF.Hi); } // 0xE0
@@ -2748,5 +2759,67 @@ const uint16_t& sharpsm83::get_last_opcode()
 const uint16_t& sharpsm83::get_current_adrress()
 {
     return PC.b0_15;
+}
+//##############################################################################
+void sharpsm83::set_IE(uint8_t value)
+{
+   IE.b0_7 = value;
+}
+//##############################################################################
+uint8_t sharpsm83::get_IE()
+{
+    return IE.b0_7;
+}
+//##############################################################################
+void sharpsm83::set_IF(uint8_t value)
+{
+    IF.b0_7 = value;
+}
+//##############################################################################
+uint8_t sharpsm83::get_IF()
+{
+    return IF.b0_7;
+}
+//##############################################################################
+void sharpsm83::handle_interrupts()
+{
+    reg8 interrupt_request;
+    interrupt_request.b0_7 = IE.b0_7 & IF.b0_7;
+    if(interrupt_request.b0_7 == 0) return;
+
+    // TODO: there is a bug in the original hardware to implement
+    if(is_halted && interrupt_request.b0_7 != 0x0) { return;}
+
+    if(!interrupts_enabled) return;
+
+    stack_push(PC.b0_15);
+
+    interrupts_enabled = false;
+
+    if(interrupt_request.b0)      //V-Blank
+    {
+        IF.b0 = 0;
+        PC.b0_15 = interrupt_address::VBLANK;
+    }
+    else if(interrupt_request.b1)  //LCD STAT
+    {
+        IF.b1 = 0;
+        PC.b0_15 = interrupt_address::LCDC;
+    }
+    else if(interrupt_request.b2)  //Timer
+    {
+        IF.b2 = 0;
+        PC.b0_15 = interrupt_address::TIMER;
+    }
+    else if(interrupt_request.b3)  //Serial
+    {
+        IF.b3 = 0;
+        PC.b0_15 = interrupt_address::SERIAL;
+    }
+    else if(interrupt_request.b4)  //Joypad
+    {
+        IF.b4 = 0;
+        PC.b0_15 = interrupt_address::JOYPAD;
+    }
 }
 //##############################################################################

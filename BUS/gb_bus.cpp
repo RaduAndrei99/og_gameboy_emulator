@@ -6,7 +6,7 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
     // cartridge read
     if(address < 0x8000)
     {
-        return cartridge->read(address);
+        return cartridge? cartridge->read(address) : 0xFF;
     }
 
     // VRAM read
@@ -47,6 +47,7 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
         //std::cout<<"[READ] IO: "<<std::hex<<address<<'\n';
         if (address == 0xFF01) return serial_data;
         if (address == 0xFF02) return serial_control;
+        if (address == 0xFF0F) return cpu->get_IF(); // Interrupt flags
 
         // TODO
         return 0xFF;
@@ -56,7 +57,7 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
     if(0xFF80 <= address && address <= 0xFFFE)  return mem.read_hram(address - 0xFF80);
 
     // Interrupt enable register
-    if(address == 0xFFFF) return 0xFF; // TODO
+    if(address == 0xFFFF) return cpu->get_IE();
 
     std::cout<<"[READ end] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
 
@@ -67,8 +68,8 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
     // cartridge write
     if(address < 0x8000)
     {
-        cartridge->write(address, data);
-
+        if(cartridge)
+            cartridge->write(address, data);
         return;
     }
 
@@ -133,6 +134,10 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
             }
             serial_control = data;
         }
+        else if (address == 0xFF0F) // IF - interrupt flags
+        {
+            cpu->set_IF(data);
+        }
 
         // TODO
         return;
@@ -149,7 +154,7 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
     // Interrupt enable register
     if(address == 0xFFFF)
     {
-        // TODO
+        cpu->set_IE(data);
         return;
     }
     
@@ -160,4 +165,8 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
 void gb_bus::set_cartridge(const std::shared_ptr<gb_cartridge>& c)
 {
    cartridge = c; 
+}
+void gb_bus::set_cpu(const std::shared_ptr<sharpsm83>& c)
+{
+    cpu = c;
 }

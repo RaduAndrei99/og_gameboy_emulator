@@ -11,6 +11,17 @@
 
 #define CPU_BITS 8
 
+struct interrupt_address
+{
+    static constexpr uint16_t VBLANK = 0x40;
+    static constexpr uint16_t LCDC   = 0x48;
+    static constexpr uint16_t TIMER  = 0x50;
+    static constexpr uint16_t SERIAL = 0x58;
+    static constexpr uint16_t JOYPAD = 0x60;
+};
+
+class gb_bus;
+
 struct sharpsm83
 {
 private:
@@ -52,6 +63,13 @@ private:
     reg16 SP;
     //program counter
     reg16 PC;
+
+    // interrupt enable register
+    reg8 IE; 
+    // interrupt flags register
+    reg8 IF;
+
+    void handle_interrupts();
 
     bool is_halted;
     bool interrupts_enabled;
@@ -872,6 +890,11 @@ public:
     void print_registers();
 
     void reset();
+
+    void set_IE(uint8_t value);
+    uint8_t get_IE();
+    void set_IF(uint8_t value);
+    uint8_t get_IF();
 };
 
 

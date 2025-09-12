@@ -4,8 +4,10 @@
 gameboy::gameboy()
 {
     bus = std::make_shared<gb_bus>();
+    cpu = std::make_shared<sharpsm83>();
 
-    cpu.set_bus(bus);
+    cpu->set_bus(bus);
+    bus->set_cpu(cpu);
 }
 
 
@@ -22,16 +24,19 @@ const std::shared_ptr<gb_cartridge>& gameboy::get_cartridge()
     return cartridge;
 }
 
-const sharpsm83& gameboy::get_cpu()
+const std::shared_ptr<sharpsm83>& gameboy::get_cpu() const
 {
     return cpu;
 }
-
+std::shared_ptr<sharpsm83>& gameboy::get_cpu()
+{
+    return cpu;
+}
 void gameboy::run()
 {
     is_running = true;
     
-    cpu.reset();
+    cpu->reset();
 
     int count_nop = 0;
     bool valid = false;
@@ -51,7 +56,13 @@ void gameboy::run()
 
         // }
 
-        cpu.tick();
+        cpu->tick();
     }
 }
+
+void gameboy::reset()
+{
+    cpu.reset();
+}
+
 

@@ -11,8 +11,7 @@ class gameboy{
 private:
     std::shared_ptr<gb_bus> bus;
     std::shared_ptr<gb_cartridge> cartridge;
-
-    sharpsm83 cpu;
+    std::shared_ptr<sharpsm83> cpu;
 
     bool is_running = false;
 
@@ -22,8 +21,11 @@ public:
 
     const std::shared_ptr<gb_cartridge>& get_cartridge();
 
-    const sharpsm83& get_cpu();
+    const std::shared_ptr<sharpsm83>& get_cpu() const;
+    std::shared_ptr<sharpsm83>& get_cpu();
 
     void run();
+
+    void reset();
 };
 #endif

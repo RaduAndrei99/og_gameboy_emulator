@@ -3,7 +3,8 @@
 
 uint8_t gb_memory::read_main(uint16_t address)
 {
-    return main_ram[address];
+
+    return address <= MAIN_MAX_MEMORY_SIZE ? main_ram[address] : 0xFF;
 }
 void gb_memory::write_main(uint16_t address, uint8_t dataIn)
 {
