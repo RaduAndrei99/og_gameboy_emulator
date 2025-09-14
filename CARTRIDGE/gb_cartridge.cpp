@@ -12,7 +12,7 @@ void gb_cartridge::load_cartridge(const std::string& path)
 
     load_info();
 
-    print_info();
+    //print_info();
 }
 
 void gb_cartridge::load_info()

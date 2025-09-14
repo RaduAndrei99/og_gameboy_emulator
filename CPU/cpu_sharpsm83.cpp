@@ -114,31 +114,25 @@ void sharpsm83::write_data(const uint16_t& address, const uint8_t& data)
         bus->bus_write(address, data);
 }
 //##############################################################################
-void sharpsm83::tick()
+int sharpsm83::tick()
 {
     handle_interrupts();
 
-    if(is_halted) return;
-
-    fetch_data(PC.b0_15);
-    uint8_t op1 = fetched_data;
-
-    fetch_data(PC.b0_15 + 1);
-    uint8_t op2 = fetched_data;
-
-    fetch_data(PC.b0_15 + 2);
-    uint8_t op3 = fetched_data;
-
-    // if(op1 == 0x01 && op2 == 0x00 && op3 == 0x12)
-    // {
-    //     std::cout<<"Reached 0x010012: "<<std::hex<<static_cast<int>(PC.b0_15)<<std::endl;
-    //     exit(0);
-    // }
+    if(is_halted) return 1;
 
     fetch_data(PC.b0_15);
     uint8_t opcode = fetched_data;
 
+    long int before = cycle_count;
     execute(opcode);
+    long int after = cycle_count;
+
+    if(exit_on_infinite_jr)
+    {
+        return -1;
+    }
+
+    return after - before;
 }
 //##############################################################################
 void sharpsm83::execute(uint8_t opcode) 
@@ -198,8 +192,47 @@ void sharpsm83::execute_nop()
 //##############################################################################
 void sharpsm83::execute_halt()
 {
-    // ???
-   is_halted = true;
+    // low power mode until an interrupt occurs
+    if (interrupts_enabled) 
+    {
+        if ( IE.b0_7 & IF.b0_7) 
+        {
+            // Interrupt pending and IME=1
+            // HALT is *skipped*, interrupt is serviced immediately
+            // Nothing to do here, handle_interrupts() will handle it after this
+        } 
+        else 
+        {
+            // No interrupt pending, enter normal HALT
+            is_halted = true;
+        }
+    } 
+    else 
+    {
+        if (IE.b0_7 & IF.b0_7) 
+        {
+            // HALT bug: IME=0 but interrupt is pending
+            // -> Don't halt, just skip incrementing PC.
+            
+            // Right now, we just re-execute the next opcode
+            // So we execute the opcode at PC+1.       
+            uint16_t current_pc = PC.b0_15;
+            fetch_data(current_pc+1);
+            uint8_t opcode = fetched_data;
+            // PC stays the same, so we re-execute the opcode
+            execute(opcode);
+
+            // tick will execute the opcode again, so the bug is emulated
+            PC.b0_15 = current_pc + 1;
+        }
+        else
+        {
+            // No interrupt pending, stay halted
+            is_halted = true;
+        }
+    }
+
+    emulate_cycles(1);
 }
 //##############################################################################
 void sharpsm83::execute_stop()
@@ -283,7 +316,7 @@ void sharpsm83::jr(bool cond)
     fetch_data(PC.b0_15 + 1);
     int8_t offset = fetched_data;
     
-    if (exit_on_infinite_jr && offset == -2) { exit(0); }
+    if (offset == -2) {exit_on_infinite_jr = true; return;} // infinite loop detected}
 
     uint16_t starting_point = PC.b0_15 + 2;
 
@@ -2162,7 +2195,7 @@ void sharpsm83::set_7_a() { set_param(7, AF.Hi); } // OxFF
 //##############################################################################
 void sharpsm83::emulate_cycles(int cycles)
 {
-
+    cycle_count += cycles;
 }
 //##############################################################################
 void sharpsm83::initialize_opcodes() 
@@ -2749,6 +2782,10 @@ void sharpsm83::reset()
 
     interrupts_enabled = false;
     is_halted = false;
+    exit_on_infinite_jr = false;
+
+    IE.b0_7 = 0x00;
+    IF.b0_7 = 0x00;
 }
 //##############################################################################
 const uint16_t& sharpsm83::get_last_opcode()
@@ -2787,8 +2824,10 @@ void sharpsm83::handle_interrupts()
     interrupt_request.b0_7 = IE.b0_7 & IF.b0_7;
     if(interrupt_request.b0_7 == 0) return;
 
-    // TODO: there is a bug in the original hardware to implement
-    if(is_halted && interrupt_request.b0_7 != 0x0) { return;}
+    if(is_halted && interrupt_request.b0_7 != 0x0) 
+    { 
+        is_halted = false;
+    }
 
     if(!interrupts_enabled) return;
 
@@ -2823,3 +2862,7 @@ void sharpsm83::handle_interrupts()
     }
 }
 //##############################################################################
+long int sharpsm83::get_cycle_count()
+{
+    return cycle_count;
+}

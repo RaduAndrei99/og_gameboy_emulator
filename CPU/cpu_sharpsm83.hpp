@@ -11,6 +11,8 @@
 
 #define CPU_BITS 8
 
+const int CLOCK_RATE = 4194304; // 4.194304 MHz
+
 struct interrupt_address
 {
     static constexpr uint16_t VBLANK = 0x40;
@@ -74,7 +76,7 @@ private:
     bool is_halted;
     bool interrupts_enabled;
 
-    bool exit_on_infinite_jr = true;
+    bool exit_on_infinite_jr = false;
 
     uint16_t last_opcode;
 
@@ -872,13 +874,14 @@ private:
     void initialize_cbopcodes();
 
     void emulate_cycles(int cycles);
+    long unsigned int cycle_count = 0;
 public:
     sharpsm83();
     ~sharpsm83();
 
     void set_bus(const std::shared_ptr<gb_bus>& b);
 
-    void tick();
+    int tick();
 
     void execute(uint8_t opcode);
     void execute_normal_instruction(uint8_t opcode);
@@ -895,6 +898,8 @@ public:
     uint8_t get_IE();
     void set_IF(uint8_t value);
     uint8_t get_IF();
+
+    long int get_cycle_count();
 };
 
 

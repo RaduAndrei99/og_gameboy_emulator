@@ -8,6 +8,11 @@ gameboy::gameboy()
 
     cpu->set_bus(bus);
     bus->set_cpu(cpu);
+
+    timer = std::make_shared<gb_timer>();
+
+    bus->set_timer(timer);
+    timer->set_bus(bus);
 }
 
 
@@ -28,10 +33,17 @@ const std::shared_ptr<sharpsm83>& gameboy::get_cpu() const
 {
     return cpu;
 }
+
 std::shared_ptr<sharpsm83>& gameboy::get_cpu()
 {
     return cpu;
 }
+
+std::shared_ptr<gb_bus>& gameboy::get_bus()
+{
+    return bus;
+}
+
 void gameboy::run()
 {
     is_running = true;
@@ -56,13 +68,22 @@ void gameboy::run()
 
         // }
 
-        cpu->tick();
+        int cycles = cpu->tick();
+        if(cycles == -1)
+            break;
+
+        bus->tick(cycles);
     }
 }
 
 void gameboy::reset()
 {
-    cpu.reset();
+    cpu->reset();
+}
+
+void gameboy::emulate_cycles(const long int& cycles)
+{
+
 }
 
 

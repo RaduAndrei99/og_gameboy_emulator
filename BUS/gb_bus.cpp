@@ -47,8 +47,14 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
         //std::cout<<"[READ] IO: "<<std::hex<<address<<'\n';
         if (address == 0xFF01) return serial_data;
         if (address == 0xFF02) return serial_control;
+        if (address == 0xFF04) return timer->get_DIV();
+        if (address == 0xFF05) return timer->get_TIMA();
+        if (address == 0xFF06) return timer->get_TMA();
+        if (address == 0xFF07) return timer->get_TAC();
         if (address == 0xFF0F) return cpu->get_IF(); // Interrupt flags
 
+        //std::cout<<"[READ] IO not implemented: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
+        
         // TODO
         return 0xFF;
     };
@@ -124,8 +130,9 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
         if (address == 0xFF01) // SB - serial data
         { 
             serial_data = data;
+            return;
         }
-        else if (address == 0xFF02) // SC - serial control
+        if (address == 0xFF02) // SC - serial control
         {
             if (data == 0x81) 
             {
@@ -133,12 +140,34 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
                 std::cout << static_cast<char>(serial_data);
             }
             serial_control = data;
+            return;
         }
-        else if (address == 0xFF0F) // IF - interrupt flags
+        if (address == 0xFF04) 
+        { 
+            timer->reset_DIV(); return; 
+        }
+        if (address == 0xFF05) 
+        { 
+            timer->set_TIMA(data); 
+            return; 
+        }
+        if (address == 0xFF06) 
+        { 
+            timer->set_TMA(data); 
+            return; 
+        }
+        if (address == 0xFF07) 
+        { 
+            timer->set_TAC(data); 
+            return; 
+        }
+        if (address == 0xFF0F) // IF - interrupt flags
         {
             cpu->set_IF(data);
+            return;
         }
 
+        //std::cout<<"[WRITE] IO not implemented: 0x"<<std::hex<<static_cast<int>(address)<<" data: 0x"<<std::hex<<static_cast<int>(data)<<'\n';
         // TODO
         return;
     }
@@ -169,4 +198,12 @@ void gb_bus::set_cartridge(const std::shared_ptr<gb_cartridge>& c)
 void gb_bus::set_cpu(const std::shared_ptr<sharpsm83>& c)
 {
     cpu = c;
+}
+void gb_bus::tick(int cycles) 
+{ 
+    timer->tick(cycles); 
+}
+void gb_bus::set_timer(const std::shared_ptr<gb_timer>& t)
+{
+    timer = t;
 }
