@@ -10,7 +10,7 @@ struct gb_bus;
 
 class gb_timer
 {
-private:
+public:
     uint16_t div = 0;  // internal 16-bit divider
     uint8_t tima = 0;
     uint8_t tma = 0;
@@ -27,7 +27,7 @@ public:
     gb_timer();
     ~gb_timer();
 
-    void tick(int cycles); // call this each CPU step
+    void tick(int ticks); // call this each CPU step
 
     uint8_t get_DIV() const;
     void reset_DIV();
@@ -42,6 +42,8 @@ public:
     void set_TAC(uint8_t val);
 
     void set_bus(const std::shared_ptr<gb_bus>& b);
+    
+    void print_status();
 };
 
 #endif

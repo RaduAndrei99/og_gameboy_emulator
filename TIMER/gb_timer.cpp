@@ -9,16 +9,19 @@ gb_timer::gb_timer() : div(0xAC00), tima(0), tma(0), tac(0), timer_counter(0), b
 }
 gb_timer::~gb_timer() = default;
 
-void gb_timer::tick(int cycles) 
+void gb_timer::tick(int ticks) 
 {
-    int T_CYCLES = cycles*CLOCKS_PER_CYCLE; // 4 clocks per CPU cycle
-    //std::cout<<std::dec<<"Ticks: "<<T_CYCLES<<'\n';
-    static int total_cycles = 0;
-    while (T_CYCLES--)  // handle one CPU cycle at a time
+    if(ticks < 0) 
+    {
+        std::cout<<"Can't emulate negative cycles!"<<'\n';
+        return;
+    }
+
+    while (ticks--)  // handle one CPU cycle at a time
     {
         uint16_t old_div = div;
+
         div++;
-        total_cycles += cycles;
         
         if (!(tac & 0x04)) continue; // timer disabled
 
@@ -32,7 +35,7 @@ void gb_timer::tick(int cycles)
         }
 
         // detect falling edge of DIV[bit]
-        bool old_bit = (old_div >> bit) & 1;
+        bool old_bit = (old_div >> bit ) & 1;
         bool new_bit = (div >> bit) & 1;
 
         // 1 -> 0 falling edge
@@ -41,10 +44,6 @@ void gb_timer::tick(int cycles)
             // overflow
             if (tima == 0xFF) 
             { 
-                //std::cout<<"Cycles: "<<std::dec<<total_cycles<<' '<<'\n';
-                total_cycles = 0;
-                
-                //std::cout<<"TIMA Overflow! Requesting Timer Interrupt."<<std::endl;
                 tima = 0x00; // reload
                 bus->cpu->set_IF(bus->cpu->get_IF() | 0x4); //s set IF.b2
                 overflow_pending = true;
@@ -100,4 +99,12 @@ void gb_timer::set_TAC(uint8_t v)
 void gb_timer::set_bus(const std::shared_ptr<gb_bus>& b) 
 {
     bus = b; 
+}
+void gb_timer::print_status()
+{
+    std::cout<<std::hex<<"DIV: "<<div<<'\n';
+    std::cout<<std::hex<<"TIMA: "<<tima<<'\n';
+    std::cout<<std::hex<<"TMA: "<<tma<<'\n';
+    std::cout<<std::hex<<"TAC: "<<tac<<'\n';
+    std::cout<<'\n';
 }

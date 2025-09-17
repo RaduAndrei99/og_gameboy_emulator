@@ -875,6 +875,8 @@ private:
 
     void emulate_cycles(int cycles);
     long unsigned int cycle_count = 0;
+
+    bool branch_taken = false;
 public:
     sharpsm83();
     ~sharpsm83();

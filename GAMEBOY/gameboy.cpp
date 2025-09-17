@@ -5,6 +5,7 @@ gameboy::gameboy()
 {
     bus = std::make_shared<gb_bus>();
     cpu = std::make_shared<sharpsm83>();
+    video = std::make_shared<gb_ppu>();
 
     cpu->set_bus(bus);
     bus->set_cpu(cpu);
@@ -13,6 +14,9 @@ gameboy::gameboy()
 
     bus->set_timer(timer);
     timer->set_bus(bus);
+
+    bus->set_video(video);
+    video->set_bus(bus);   
 }
 
 
@@ -27,6 +31,11 @@ void gameboy::load_cartridge(const std::string& path)
 const std::shared_ptr<gb_cartridge>& gameboy::get_cartridge()
 {
     return cartridge;
+}
+
+std::shared_ptr<gb_ppu>& gameboy::get_video()\
+{
+    return video;
 }
 
 const std::shared_ptr<sharpsm83>& gameboy::get_cpu() const
@@ -44,15 +53,17 @@ std::shared_ptr<gb_bus>& gameboy::get_bus()
     return bus;
 }
 
+std::shared_ptr<gb_timer>& gameboy::get_timer()
+{
+    return timer;
+}
+
 void gameboy::run()
 {
     is_running = true;
     
     cpu->reset();
-
-    int count_nop = 0;
-    bool valid = false;
-
+    
     while(is_running)
     {
         // if(cpu.get_current_adrress() == 0xc46b )
@@ -72,7 +83,7 @@ void gameboy::run()
         if(cycles == -1)
             break;
 
-        bus->tick(cycles);
+        bus->tick(4*cycles);
     }
 }
 

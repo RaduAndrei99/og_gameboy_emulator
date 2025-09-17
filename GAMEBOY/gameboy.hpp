@@ -14,6 +14,7 @@ private:
     std::shared_ptr<gb_cartridge> cartridge;
     std::shared_ptr<sharpsm83> cpu;
     std::shared_ptr<gb_timer> timer;
+    std::shared_ptr<gb_ppu> video;
 
     bool is_running = false;
     
@@ -26,11 +27,15 @@ public:
     const std::shared_ptr<sharpsm83>& get_cpu() const;
     std::shared_ptr<sharpsm83>& get_cpu();
     std::shared_ptr<gb_bus>& get_bus();
+    std::shared_ptr<gb_ppu>& get_video();
+    std::shared_ptr<gb_timer>& get_timer();
 
     void run();
 
     void reset();
 
     void emulate_cycles(const long int& cycles);
+
+    
 };
 #endif
