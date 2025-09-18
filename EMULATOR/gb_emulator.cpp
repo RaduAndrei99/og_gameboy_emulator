@@ -33,7 +33,7 @@ bool gb_emulator::OnUserCreate()
     //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/10-bit-ops.gb");
     //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/11-op-a,(hl).gb");
 
-    //gb.load_cartridge("../ROMs/test/cpu_instrs/cpu_instrs.gb");
+    gb.load_cartridge("../ROMs/test/cpu_instrs/cpu_instrs.gb");
     //gb.load_cartridge("../ROMs/test/instr_timing/instr_timing.gb");
 
     //gb.load_cartridge("../ROMs/test/interrupt_time/interrupt_time.gb");
@@ -47,7 +47,7 @@ bool gb_emulator::OnUserCreate()
 
     //gb.load_cartridge("../ROMs/test/double-halt-cancel-gbconly.gb");
 
-    gb.load_cartridge("../ROMs/test/halt_bug.gb");
+    //gb.load_cartridge("../ROMs/test/halt_bug.gb");
 
     gb.get_cpu()->reset();
     

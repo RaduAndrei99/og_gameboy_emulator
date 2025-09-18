@@ -101,16 +101,12 @@ void sharpsm83::complement_carry_flag()
 //##############################################################################
 uint8_t sharpsm83::fetch_data()
 {  
-    if(bus)
-    {
-        return bus->bus_read(PC.b0_15++);
-    }
+    return halt_bug ? bus->bus_read(PC.b0_15) : bus->bus_read(PC.b0_15++); 
 }
 //##############################################################################
 void sharpsm83::write_data(const uint16_t& address, const uint8_t& data)
 {
-    if(bus)
-        bus->bus_write(address, data);
+    bus->bus_write(address, data);
 }
 //##############################################################################
 int sharpsm83::tick()
@@ -129,19 +125,8 @@ int sharpsm83::tick()
 
     if (halt_bug) 
     {
-        std::cout<<"HALT BUG!"<<'\n';
         halt_bug = false;
-
-        uint16_t oldPC = PC.b0_15;
-
         execute(opcode);
-
-        if(opcode == 0x76)
-        {
-            std::cout<<"halt after halt"<<'\n';
-        }
-
-        PC.b0_15 = oldPC + 1;
     } 
     else 
     {
