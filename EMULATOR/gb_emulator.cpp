@@ -40,12 +40,14 @@ bool gb_emulator::OnUserCreate()
 
     //gb.load_cartridge("../ROMs/test/mem_timing/mem_timing.gb");
 
-    gb.load_cartridge("../ROMs/test/mem_timing-2/mem_timing.gb");
+    //gb.load_cartridge("../ROMs/test/mem_timing-2/mem_timing.gb");
     //gb.load_cartridge("../ROMs/test/mem_timing-2/rom_singles/01-read_timing.gb");
     //gb.load_cartridge("../ROMs/test/mem_timing-2/rom_singles/02-write_timing.gb");
     //gb.load_cartridge("../ROMs/test/mem_timing-2/rom_singles/03-modify_timing.gb");
 
-    //gb.load_cartridge("../ROMs/test/halt_bug.gb");
+    //gb.load_cartridge("../ROMs/test/double-halt-cancel-gbconly.gb");
+
+    gb.load_cartridge("../ROMs/test/halt_bug.gb");
 
     gb.get_cpu()->reset();
     

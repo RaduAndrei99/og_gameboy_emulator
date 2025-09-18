@@ -73,8 +73,12 @@ private:
 
     void handle_interrupts();
 
-    bool is_halted;
-    bool interrupts_enabled;
+    bool is_halted = false;
+    bool halt_bug = false;
+    bool interrupts_enabled = false;
+    bool ei_pending = false;      // EI has been executed
+    bool ei_scheduled = false;    // waiting one instruction
+    void finish_instruction();
 
     bool exit_on_infinite_jr = false;
 
@@ -84,8 +88,6 @@ private:
     bool ce;
 
     std::shared_ptr<gb_bus> bus;
-
-    uint8_t fetched_data;
 
     void enable_interrupts();
     void disable_interrupts();
@@ -107,7 +109,7 @@ private:
     // cpu instructions to set complement flag
     void complement_carry_flag();
 
-    void fetch_data(const uint16_t& address);
+    uint8_t fetch_data();
     void write_data(const uint16_t& address, const uint8_t& data);
 
     void execute_nop();
@@ -127,7 +129,6 @@ private:
     void jp(bool cond);
 
     void call(bool cond);
-    void call(const uint16_t& address);
 
     void rst(const uint16_t& address);
 
