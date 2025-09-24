@@ -346,20 +346,50 @@ struct cartridge_info{
 
 class gb_cartridge
 {
-private:
-    std::vector<uint8_t> rawData;
+protected:
+    // all data, including rom
+    std::vector<uint8_t> raw_data;
+
+    // external RAM
+    std::vector<uint8_t> ram;
+
     cartridge_info info;
 
     void load_info();
 public:
-
-    void load_cartridge(const std::string& path);
+    gb_cartridge(std::vector<uint8_t>& rom);
+    virtual ~gb_cartridge() = default;
 
     void print_info();
 
-    uint8_t read(const uint16_t& address);
-    void write(const uint16_t& address, const uint8_t& data);
+    virtual uint8_t read(const uint16_t& address) = 0;
+    virtual void write(const uint16_t& address, const uint8_t& data) = 0;
 };
+
+class no_mbc : public gb_cartridge{
+public:
+    no_mbc(std::vector<uint8_t>& rom);
+
+    uint8_t read(const uint16_t& address) override;
+    void write(const uint16_t& address, const uint8_t& data) override;
+};
+
+class mbc1 : public gb_cartridge{
+private:
+    bool ram_enabled = false;
+    uint8_t rom_bank_low = 0;
+    uint8_t rom_bank_high = 0;
+    uint8_t ram_bank = 0;
+    uint8_t mode = 0;
+
+public:
+    mbc1(std::vector<uint8_t>& rom);
+
+    uint8_t read(const uint16_t& address) override;
+    void write(const uint16_t& address, const uint8_t& data) override;
+};
+
+std::shared_ptr<gb_cartridge> load_and_construct_cartridge(const std::string& path);
 
 #endif
 

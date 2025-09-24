@@ -19,13 +19,10 @@ gameboy::gameboy()
     video->set_bus(bus);   
 }
 
-
 void gameboy::load_cartridge(const std::string& path)
 {
-    cartridge = std::make_unique<gb_cartridge>();
+    cartridge = load_and_construct_cartridge(path);
     bus->set_cartridge(cartridge);
-
-    cartridge->load_cartridge(path);
 }
 
 const std::shared_ptr<gb_cartridge>& gameboy::get_cartridge()
@@ -82,8 +79,6 @@ void gameboy::run()
         int cycles = cpu->tick();
         if(cycles == -1)
             break;
-
-        bus->tick(4*cycles);
     }
 }
 

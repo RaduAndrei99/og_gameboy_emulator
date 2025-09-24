@@ -24,5 +24,7 @@ std::vector<uint8_t> read_file_to_vector(const std::string& file_name)
         std::cout<<"failed to read file: " + file_name<<'\n';
     }
 
+    file.close();
+
     return buffer;
 }

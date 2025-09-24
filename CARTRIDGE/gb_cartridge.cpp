@@ -1,49 +1,82 @@
+#include<cstdlib>
+
 #include "gb_cartridge.hpp"
 #include "../UTILS/file_io.hpp"
 
-void gb_cartridge::load_cartridge(const std::string& path)
+std::shared_ptr<gb_cartridge> load_and_construct_cartridge(const std::string& path)
 {
-    rawData = read_file_to_vector(path);
+    std::vector<uint8_t> raw_data = read_file_to_vector(path);
 
-    if(rawData.size() == 0)
+    if(raw_data.size() == 0) 
+    {
+        std::cout<<"failed to read file: " + path<<'\n';
+        exit(-1);
+    }
+
+    std::cout<<"Loaded "<< path<<" with "<<raw_data.size()<<" bytes."<<'\n';
+
+    uint8_t cart_type = raw_data[cartridge_header::CARTRIDGE_TYPE];
+    
+    switch(cart_type)
+    {
+        case 0x0: return std::make_shared<no_mbc>(raw_data);
+        
+        case 0x1: 
+        case 0x2: 
+        case 0x3: 
+            return std::make_shared<mbc1>(raw_data);
+
+        default:
+        {
+            std::cout<<"[CARTRIDGE] Unknown cartridge type!"<<'\n';
+            exit(-1);
+        };
+    }
+}
+
+gb_cartridge::gb_cartridge(std::vector<uint8_t>& rom)
+{
+    raw_data = rom;
+
+    if(raw_data.size() == 0)
         return;
-
-    std::cout<<"Loaded "<< path<<" with "<<rawData.size()<<" bytes."<<'\n';
 
     load_info();
 
-    //print_info();
+    ram.resize(info.ram_size);
+
+    print_info();
 }
 
 void gb_cartridge::load_info()
 {
-    info.title = std::string(rawData.begin() + cartridge_header::TITLE, 
-                             rawData.begin() + cartridge_header::TITLE_END);
+    info.title = std::string(raw_data.begin() + cartridge_header::TITLE, 
+                             raw_data.begin() + cartridge_header::TITLE_END);
 
-    info.manufacturer_code = std::string(rawData.begin() + cartridge_header::MANUFACTURER_CODE, 
-                             rawData.begin() + cartridge_header::MANUFACTURER_CODE_END);
+    info.manufacturer_code = std::string(raw_data.begin() + cartridge_header::MANUFACTURER_CODE, 
+                             raw_data.begin() + cartridge_header::MANUFACTURER_CODE_END);
     
-    info.cgb_flag = rawData[cartridge_header::CGB_FLAG];
+    info.cgb_flag = raw_data[cartridge_header::CGB_FLAG];
 
-    info.license_code = std::string(rawData.begin() + cartridge_header::NEW_LICENSE_CODE, 
-                             rawData.begin() + cartridge_header::NEW_LICENSE_CODE_END);
+    info.license_code = std::string(raw_data.begin() + cartridge_header::NEW_LICENSE_CODE, 
+                             raw_data.begin() + cartridge_header::NEW_LICENSE_CODE_END);
 
-    info.sgb_flag = rawData[cartridge_header::SGB_FLAG];
+    info.sgb_flag = raw_data[cartridge_header::SGB_FLAG];
 
-    info.cartridge_type = rawData[cartridge_header::CARTRIDGE_TYPE];
+    info.cartridge_type = raw_data[cartridge_header::CARTRIDGE_TYPE];
 
-    info.rom_size = rawData[cartridge_header::ROM_SIZE];
-    info.ram_size = rawData[cartridge_header::RAM_SIZE];
-    info.destination_code = rawData[cartridge_header::DESTINATION_CODE];
+    info.rom_size = raw_data[cartridge_header::ROM_SIZE];
+    info.ram_size = raw_data[cartridge_header::RAM_SIZE];
+    info.destination_code = raw_data[cartridge_header::DESTINATION_CODE];
 
-    info.old_license_code = rawData[cartridge_header::OLD_LICENSE_CODE];
-    info.mask_rom_version_number = rawData[cartridge_header::MASK_ROM_VERSION_NUMBER];
+    info.old_license_code = raw_data[cartridge_header::OLD_LICENSE_CODE];
+    info.mask_rom_version_number = raw_data[cartridge_header::MASK_ROM_VERSION_NUMBER];
 
-    auto validate_header_checksum = [this](std::vector<uint8_t>& rawData, uint8_t value)
+    auto validate_header_checksum = [this](std::vector<uint8_t>& raw_data, uint8_t value)
     {
         uint8_t checksum = 0;
         for (uint16_t address = 0x0134; address <= 0x014C; address++) {
-            checksum = checksum - rawData[address] - 1;
+            checksum = checksum - raw_data[address] - 1;
         }
 
         if(value == checksum)
@@ -56,15 +89,15 @@ void gb_cartridge::load_info()
         }
     };
 
-    info.header_checksum = rawData[cartridge_header::HEADER_CHECKSUM];
-    validate_header_checksum(rawData, info.header_checksum);
+    info.header_checksum = raw_data[cartridge_header::HEADER_CHECKSUM];
+    validate_header_checksum(raw_data, info.header_checksum);
 
-    auto validate_global_checksum = [this](std::vector<uint8_t>& rawData, uint16_t value)
+    auto validate_global_checksum = [this](std::vector<uint8_t>& raw_data, uint16_t value)
     {
         uint16_t checksum = 0;
-        for (int address = 0; address<rawData.size(); address++) {
+        for (int address = 0; address<raw_data.size(); address++) {
             if(address == 0x014E || address == 0x014F ) continue;
-            checksum = checksum + rawData[address];
+            checksum = checksum + raw_data[address];
         }
 
         if(value == checksum)
@@ -77,10 +110,10 @@ void gb_cartridge::load_info()
         }
     };
 
-    uint8_t high = rawData[cartridge_header::GLOBAL_CHECKSUM];
-    uint8_t low = rawData[cartridge_header::GLOBAL_CHECKSUM_END];
+    uint8_t high = raw_data[cartridge_header::GLOBAL_CHECKSUM];
+    uint8_t low = raw_data[cartridge_header::GLOBAL_CHECKSUM_END];
     info.global_checksum = (high << 8) | low;
-    validate_global_checksum(rawData, info.global_checksum);    
+    validate_global_checksum(raw_data, info.global_checksum);    
 }
 
 std::string namecode_to_publisher_value(const std::string& code)
@@ -132,17 +165,17 @@ std::string namecode_to_old_licensees(uint8_t code)
 void gb_cartridge::print_info()
 {
     std::cout<<"Entry point: "
-    <<"0x"<<std::hex<<static_cast<int>(rawData[0x0100]) << ' '
-    <<"0x"<<std::hex<<static_cast<int>(rawData[0x0101]) << ' '
-    <<"0x"<<std::hex<<static_cast<int>(rawData[0x0102]) << ' '
-    <<"0x"<<std::hex<<static_cast<int>(rawData[0x0103]) <<'\n';
+    <<"0x"<<std::hex<<static_cast<int>(raw_data[0x0100]) << ' '
+    <<"0x"<<std::hex<<static_cast<int>(raw_data[0x0101]) << ' '
+    <<"0x"<<std::hex<<static_cast<int>(raw_data[0x0102]) << ' '
+    <<"0x"<<std::hex<<static_cast<int>(raw_data[0x0103]) <<'\n';
 
     std::cout<<"Nintendo logo: "<<'\n';
     for(int i=0x104; i<0x133; i+=0x10)
     {
         for(int j=0; j<0x10; ++j)
         {
-            std::cout<<"0x"<<std::hex<<static_cast<int>(rawData[i+j])<<'\t';
+            std::cout<<"0x"<<std::hex<<static_cast<int>(raw_data[i+j])<<'\t';
         }
         std::cout<<'\n';
     }
@@ -168,15 +201,84 @@ void gb_cartridge::print_info()
     std::cout<<"Mask ROM version number: 0x"<<std::hex<<static_cast<int>(info.mask_rom_version_number)<<'\n';
     std::cout<<"Header checksum: 0x"<<std::hex<<static_cast<int>(info.header_checksum)<<'\n';
     std::cout<<"Global checksum: 0x"<<std::hex<<static_cast<int>(info.global_checksum)<<'\n';
-
 }
 
-uint8_t gb_cartridge::read(const uint16_t& address)
+no_mbc::no_mbc(std::vector<uint8_t>& rom) : gb_cartridge(rom)
 {
-    return rawData[address];
+    std::cout<<"No mbc cartridge!"<<'\n';
 }
 
-void gb_cartridge::write(const uint16_t& address, const uint8_t& data)
+uint8_t no_mbc::read(const uint16_t& address)
 {
-    rawData[address] = data;
+    return raw_data[address];
 }
+
+void no_mbc::write(const uint16_t& address, const uint8_t& data)
+{
+    //std::cout<<"[CARTRIDGE] No MBC write!"<<'\n';
+}
+
+mbc1::mbc1(std::vector<uint8_t>& rom) : gb_cartridge(rom)
+{
+    std::cout<<"MBC1 cartridge!"<<'\n';
+}
+void mbc1::write(const uint16_t& address, const uint8_t& data)
+{
+    if(address < 0x2000)
+    {
+        ram_enabled = ((data & 0xF) == 0xA);
+    } 
+    else if(address < 0x4000)
+    {
+        rom_bank_low = data & 0x1F;
+
+        if(rom_bank_low == 0x0) rom_bank_low = 0x1;
+    }
+    else if(address < 0x6000)
+    {
+        // either the high bits of rom or the ram depending on the mode
+        rom_bank_high = data & 0x03;
+        ram_bank = data & 0x03;
+    }
+    else if(address < 0x8000)
+    {
+        mode = data & 0x01;
+    }
+    else if (0xA000 <= address && address < 0xC000) 
+    {
+        if (!ram_enabled || ram.size() == 0) return;
+        
+        uint32_t bank = (mode == 0) ? 0 : ram_bank;
+        uint32_t offset = bank * 0x2000 + (address - 0xA000);
+        ram[offset] = data;
+    }
+}
+
+uint8_t mbc1::read(const uint16_t& address)
+{
+    if (address < 0x4000) 
+    {
+        return raw_data[address];
+    }
+    else if (address < 0x8000) 
+    {
+        // Switchable bank
+        if (rom_bank_low == 0) rom_bank_low = 0x1; // hardware quirk: bank 0 -> 1
+        uint32_t bank = (rom_bank_high << 5) | rom_bank_low;
+        
+        uint32_t offset = bank * 0x4000 + (address - 0x4000);
+
+        return raw_data[offset];
+    }
+    else if (0xA000 <= address && address < 0xC000) 
+    {
+        if (!ram_enabled) return 0xFF;
+        
+        uint32_t bank = (mode == 0) ? 0 : ram_bank;
+        uint32_t offset = bank * 0x2000 + (address - 0xA000);
+        return ram[offset];
+    }
+    
+    return 0xFF;
+}
+

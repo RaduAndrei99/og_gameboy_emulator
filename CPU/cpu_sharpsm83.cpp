@@ -18,7 +18,7 @@ void sharpsm83::set_bus(const std::shared_ptr<gb_bus>& b)
 //##############################################################################
 void sharpsm83::enable_interrupts()
 {
-    std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Pending enable interrupts!"<<'\n';
+    //std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Pending enable interrupts!"<<'\n';
     ei_pending = true;
     emulate_cycles(1);
 }
@@ -229,6 +229,19 @@ void sharpsm83::execute_halt()
 void sharpsm83::execute_stop()
 {
     std::cout<<"STOP"<<'\n';
+    PC.b0_15 += 1;   // Skip padding byte
+
+    // TODO: see about the halt
+    //is_halted = true;
+
+    uint8_t key1 = bus->bus_read(0xFF4D);
+
+    // If speed switch armed, toggle speed and clear armed bit
+    if (key1 & 0x01) 
+    {
+        key1 = (key1 ^ 0x80) & 0x80;  // toggle bit 7, clear bit 0
+        bus->bus_write(0xFF4D, key1);
+    }
 }
 //##############################################################################
 void sharpsm83::rlc(reg8& reg)
@@ -2658,7 +2671,7 @@ uint8_t sharpsm83::get_IF()
 void sharpsm83::handle_interrupts()
 {
     reg8 interrupt_request;
-    interrupt_request.b0_7 = bus->bus_read(0xFFFF) & bus->bus_read(0xFF0F) & 0x1F;
+    interrupt_request.b0_7 = bus->bus_read(0xFFFF) & bus->bus_read(0xFF0F);
 
     if(interrupt_request.b0_7 == 0) return;
 
@@ -2672,11 +2685,9 @@ void sharpsm83::handle_interrupts()
 
     interrupts_enabled = false;
 
-    //emulate_cycles(5);
-
     if(interrupt_request.b0)      //V-Blank
     {
-        std::cout<<"HANDLE VBLANK"<<'\n';
+        //std::cout<<"HANDLE VBLANK"<<'\n';
         IF.b0 = 0;
         PC.b0_15 = interrupt_address::VBLANK;
     }
@@ -2720,7 +2731,7 @@ void sharpsm83::finish_instruction()
     {
         interrupts_enabled = true;
         ei_scheduled = false;
-        std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Enable interrupts!"<<'\n';
+        //std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Enable interrupts!"<<'\n';
     }
     if (ei_pending) 
     {

@@ -31,7 +31,7 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
             return bootDMG[address];
         }
 
-        return cartridge? cartridge->read(address) : 0xFF;
+        return cartridge->read(address);
     }
 
     // VRAM read
@@ -68,6 +68,7 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
     if(0xFF00 <= address && address <= 0xFF7F)
     {
         //std::cout<<"[READ] IO: "<<std::hex<<address<<'\n';
+        //if (address == 0xFF00) return mem.JOYP | 0x0F; //TODO: implement properly
         if (address == 0xFF01) return serial_data;
         if (address == 0xFF02) return serial_control;
         if (address == 0xFF04) return timer->get_DIV();
@@ -82,11 +83,12 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
         if (address == 0xFF44) return video->read_LY();
         if (address == 0xFF45) return video->read_LYC();
         if (address == 0xFF47) return video->read_BGP();
+        if (address == 0xFF4D) return mem.KEY1 & 0x81;
 
         //std::cout<<"[READ] IO not implemented: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
         
         // TODO
-        return 0xFF;
+        return 0x00;
     };
 
     // HRAM
@@ -148,7 +150,7 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
     // Not usable memory area)
     if(0xFEA0 <= address && address <= 0xFEFF) 
     {
-        std::cout<<"[WRITE] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
+        //std::cout<<"[WRITE] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
         return;
         //exit(-1);
     }
@@ -158,6 +160,11 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
     {
         //std::cout<<"[WRITE] IO: "<<std::hex<<address<<'\n';
 
+        if (address == 0xFF00) // Joypad
+        { 
+            mem.JOYP = data & 0x30;
+            return;
+        }
         if (address == 0xFF01) // SB - serial data
         { 
             serial_data = data;
@@ -232,6 +239,11 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
             video->write_BGP(data);
             return;
         }
+        if (address == 0xFF4D)
+        {
+            mem.KEY1 = (mem.KEY1 & 0x80) | (data & 0x01);
+            return;
+        }
 
         if (address == 0xFF50) 
         {
@@ -260,7 +272,7 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
         return;
     }
     
-    std::cout<<"[WRITE] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
+    //std::cout<<"[WRITE] No valid address: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
 
     exit(-1);
 }
