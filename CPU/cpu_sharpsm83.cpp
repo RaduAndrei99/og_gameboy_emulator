@@ -2043,7 +2043,8 @@ void sharpsm83::set_7_a() { set_param(7, AF.Hi); } // OxFF
 void sharpsm83::emulate_cycles(int cycles)
 {
     cycle_count += cycles;
-    bus->tick(4*cycles);
+
+    bus->tick(cycles);
 }
 //##############################################################################
 void sharpsm83::initialize_opcodes() 
@@ -2683,6 +2684,8 @@ void sharpsm83::handle_interrupts()
 
     stack_push(PC.b0_15);
 
+    emulate_cycles(5);
+
     interrupts_enabled = false;
 
     if(interrupt_request.b0)      //V-Blank
@@ -2731,7 +2734,7 @@ void sharpsm83::finish_instruction()
     {
         interrupts_enabled = true;
         ei_scheduled = false;
-        //std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Enable interrupts!"<<'\n';
+        std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Enable interrupts!"<<'\n';
     }
     if (ei_pending) 
     {

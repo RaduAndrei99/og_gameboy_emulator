@@ -14,7 +14,7 @@ public:
     uint16_t div = 0;  // internal 16-bit divider
     uint8_t tima = 0;
     uint8_t tma = 0;
-    uint8_t tac = 0;
+    uint8_t tac = 0xF8;
 
     int timer_counter = 0; // counts down CPU cycles until next TIMA tick
     uint clocks = 0;

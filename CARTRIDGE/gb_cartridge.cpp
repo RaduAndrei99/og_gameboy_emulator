@@ -28,7 +28,7 @@ std::shared_ptr<gb_cartridge> load_and_construct_cartridge(const std::string& pa
 
         default:
         {
-            std::cout<<"[CARTRIDGE] Unknown cartridge type!"<<'\n';
+            std::cout<<"[CARTRIDGE] Unknown cartridge type: "<<(int)cart_type<<'\n';
             exit(-1);
         };
     }

@@ -35,6 +35,7 @@ struct gb_bus
 
     void tick(int cycles);
 
+    void dma_transfer(uint8_t byte);
 };
 
 #endif

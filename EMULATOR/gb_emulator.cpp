@@ -18,7 +18,7 @@ void gb_emulator::cpu_task()
 bool gb_emulator::OnUserCreate() 
 {
     // Called once at the start, so create things here
-    //gb.load_cartridge("../ROMs/Tetris.gb");
+    gb.load_cartridge("../ROMs/Tetris.gb");
     //gb.load_cartridge("../ROMs/Pokemon-Red.gb");
 
     //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/01-special.gb");
@@ -47,7 +47,7 @@ bool gb_emulator::OnUserCreate()
 
     //gb.load_cartridge("../ROMs/test/double-halt-cancel-gbconly.gb");
 
-    gb.load_cartridge("../ROMs/test/halt_bug.gb");
+    //gb.load_cartridge("../ROMs/test/halt_bug.gb");
     //gb.load_cartridge("../ROMs/hello-world.gb");
 
     gb.get_cpu()->reset();
@@ -58,6 +58,10 @@ bool gb_emulator::OnUserCreate()
 bool gb_emulator::OnUserUpdate(float fElapsedTime)
 {
     int cycles_this_frame = 0;
+
+    const double FRAME_TIME_MS = 1000.0 / (59.73); // ~16.74 ms
+
+    static auto lastFrameTime = std::chrono::high_resolution_clock::now();
 
     while (cycles_this_frame < CYCLES_PER_FRAME) 
     {
@@ -109,6 +113,16 @@ bool gb_emulator::OnUserUpdate(float fElapsedTime)
     {
         OnUserCreate();
     }
+
+    // Frame pacing
+    // auto now = std::chrono::high_resolution_clock::now();
+    // auto elapsed = std::chrono::duration<double, std::milli>(now - lastFrameTime).count();
+
+    // if (elapsed < FRAME_TIME_MS) {
+    //     std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(FRAME_TIME_MS - elapsed));
+    // }
+
+    // lastFrameTime = std::chrono::high_resolution_clock::now();
 
     return true;
 }

@@ -83,12 +83,15 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
         if (address == 0xFF44) return video->read_LY();
         if (address == 0xFF45) return video->read_LYC();
         if (address == 0xFF47) return video->read_BGP();
+        if (address == 0xFF48) return video->read_OPB0();
+        if (address == 0xFF49) return video->read_OPB1();
+
         if (address == 0xFF4D) return mem.KEY1 & 0x81;
 
         //std::cout<<"[READ] IO not implemented: 0x"<<std::hex<<static_cast<int>(address)<<'\n';
         
         // TODO
-        return 0x00;
+        return 0xFF;
     };
 
     // HRAM
@@ -182,7 +185,8 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
         }
         if (address == 0xFF04) 
         { 
-            timer->reset_DIV(); return; 
+            timer->reset_DIV(); 
+            return; 
         }
         if (address == 0xFF05) 
         { 
@@ -234,9 +238,24 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
             video->write_LYC(data);
             return;
         }
+        if (address == 0xFF46)
+        {
+            dma_transfer(data);
+            return;
+        }
         if (address == 0xFF47)
         {
             video->write_BGP(data);
+            return;
+        }
+        if (address == 0xFF48)
+        {
+            video->write_OBP0(data);
+            return;
+        }
+        if (address == 0xFF49)
+        {
+            video->write_OBP1(data);
             return;
         }
         if (address == 0xFF4D)
@@ -286,8 +305,9 @@ void gb_bus::set_cpu(const std::shared_ptr<sharpsm83>& c)
 }
 void gb_bus::tick(int cycles) 
 { 
-    video->tick(4*cycles);
-    timer->tick(cycles); 
+    video->tick(4*cycles);//!!!!!!!!!!!!!!!!!!!
+    
+    timer->tick(4*cycles); 
 }
 void gb_bus::set_timer(const std::shared_ptr<gb_timer>& t)
 {
@@ -296,4 +316,20 @@ void gb_bus::set_timer(const std::shared_ptr<gb_timer>& t)
 void gb_bus::set_video(const std::shared_ptr<gb_ppu>& v)
 {
     video = v;
+}
+void gb_bus::dma_transfer(uint8_t byte)
+{
+    uint16_t start_address = byte << 8; // source = page * 0x100
+
+    //std::cout<<"DMA with "<<start_address<<'\n';
+
+    for (int i = 0; i < 160; ++i) 
+    {
+        uint16_t from_address = start_address + i;
+        uint16_t to_address = 0xFE00 + i;
+
+        uint8_t value_at_address = bus_read(from_address);
+
+        bus_write(to_address, value_at_address);
+    }
 }

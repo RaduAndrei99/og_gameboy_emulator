@@ -3,7 +3,7 @@
 
 const uint CLOCKS_PER_CYCLE = 4;
 
-gb_timer::gb_timer() : div(0xAC00), tima(0), tma(0), tac(0), timer_counter(0), bus(nullptr) 
+gb_timer::gb_timer() : div(0xAC00), tima(0), tma(0), tac(0xF8), timer_counter(0), bus(nullptr) 
 {
 
 }

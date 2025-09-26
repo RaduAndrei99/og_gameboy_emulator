@@ -50,6 +50,7 @@ private:
     std::shared_ptr<gb_bus> bus;
 
     std::vector<object_attribute> visible_objects;
+    uint8_t scanline_color_index[160];
 
     frame_buffer buffer;
 
@@ -64,6 +65,8 @@ private:
     uint8_t LYC; // LY Compare (0xFF45)
 
     uint8_t BGP; // BG palette data (0xFF47)
+    uint8_t OBP0; // obj palette register 0
+    uint8_t OBP1; // obj palette register 1
 
     uint8_t WX; // Window X position (0xFF4B)
     uint8_t WY; // Window Y position (0xFF4A)
@@ -108,6 +111,12 @@ public:
 
     uint8_t read_BGP();
     void write_BGP(uint8_t data);
+
+    uint8_t read_OPB0();
+    void write_OBP0(uint8_t data);
+
+    uint8_t read_OPB1();
+    void write_OBP1(uint8_t data);
 
     void dump_vram(const std::string &filename);
 };

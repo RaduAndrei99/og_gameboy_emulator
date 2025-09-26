@@ -112,28 +112,29 @@ void gb_ppu::write(const uint16_t& address, const uint8_t& data)
 {
     video_ram[address] = data;
 }
-void gb_ppu::select_objects_for_line()
+void gb_ppu::select_objects_for_line() 
 {
     visible_objects.clear();
 
-    for(int i=0; i<40; ++i)
+    int spriteHeight = (LCDC & 0x04) ? 16 : 8;
+
+    for (int i = 0; i < 40; ++i) 
     {
         object_attribute obj;
-        obj.y_position = bus->mem.read_oam(0xFE00 + i*4 + 0);
-        obj.x_position = bus->mem.read_oam(0xFE00 + i*4 + 1);
-        obj.tile_index = bus->mem.read_oam(0xFE00 + i*4 + 2);
-        obj.attributes = bus->mem.read_oam(0xFE00 + i*4 + 3);
+        obj.y_position = bus->bus_read(0xFE00 + i*4 + 0);
+        obj.x_position = bus->bus_read(0xFE00 + i*4 + 1);
+        obj.tile_index = bus->bus_read(0xFE00 + i*4 + 2);
+        obj.attributes = bus->bus_read(0xFE00 + i*4 + 3);
 
-        int height = (LCDC & 0x04) ? 16 : 8;
+        int top = obj.y_position - 16;
 
-        if(obj.y_position < LY && LY < (obj.y_position + height))
+        if (LY >= top && LY < top + spriteHeight) 
         {
             visible_objects.push_back(obj);
 
-            if(visible_objects.size() == 10)
-                break;
+            if (visible_objects.size() == 10) break;
         }
-    }   
+    }
 }
 
 void gb_ppu::render_scanline()
@@ -151,6 +152,13 @@ void gb_ppu::render_scanline()
     {
         render_background_line();
     }
+
+    // 2. Sprites
+    if(LCDC & 0x02)
+    {
+        render_sprite_line();
+    }
+    
 }
 
 void gb_ppu::render_background_line()
@@ -159,6 +167,7 @@ void gb_ppu::render_background_line()
     uint16_t bg_base_pointer = (LCDC & 0x08) ? 0x9C00 : 0x9800;
     // Tile data base address (0x8000 unsigned, or 0x8800 signed)
     uint16_t tile_data_base = (LCDC & 0x10) ? 0x8000 : 0x8800;
+    uint8_t palette = bus->bus_read(0xFF47);
 
     uint screen_y = LY;
 
@@ -194,8 +203,10 @@ void gb_ppu::render_background_line()
         int bit = 7 - (scrolled_x % 8);
         uint8_t pixel_value = ((high >> bit) & 1) << 1 | ((low >> bit) & 1);
 
+        // Store raw color index (0–3) for sprite blending
+        scanline_color_index[screen_x] = pixel_value;
+
         // Map pixel value through background palette (FF47)
-        uint8_t palette = bus->bus_read(0xFF47);
         uint8_t shade = (palette >> (pixel_value * 2)) & 0x03;
 
         gb_color color = get_color(shade);
@@ -210,8 +221,78 @@ void gb_ppu::render_window_line()
 }
 void gb_ppu::render_sprite_line()
 {
+    int height = (LCDC & 0x04) ? 16 : 8;
 
+    int screen_y = LY;
+
+    for(int i=0; i<visible_objects.size(); ++i)
+    {
+        const object_attribute& sprite = visible_objects[i];
+
+        // TODO: more complicated
+        if (sprite.y_position == 0 || sprite.y_position >= 160) { continue; }
+        if (sprite.x_position == 0 || sprite.x_position >= 168) { continue; }
+
+        // Y position in screen space: OAM.y - 16
+        int y_pos = sprite.y_position - 16;
+        int y_in_sprite = LY - y_pos;
+
+        // Apply vertical flip
+        bool y_flip = sprite.attributes & 0x10;
+        if (y_flip)
+        {
+            y_in_sprite = height - 1 - y_in_sprite;
+        }
+        
+        // Handle 8x16 mode: force even tile index, select top/bottom tile
+        uint8_t tile_index = sprite.tile_index;
+        if (height == 16)
+        {
+            tile_index &= 0xFE; // hardware ignores LSB
+            if (y_in_sprite >= 8) 
+            {
+                tile_index |= 0x01; // bottom tile
+                y_in_sprite -= 8;
+            }
+        }
+
+        // Fetch the 2 bytes for this row of tile data
+        uint16_t tile_addr = 0x8000 + (tile_index * 16);
+        uint8_t low  = bus->bus_read(tile_addr + y_in_sprite * 2);
+        uint8_t high = bus->bus_read(tile_addr + y_in_sprite * 2 + 1);
+
+        for (int x = 0; x < 8; x++) 
+        {
+            // OAM.x - 8 is the true position
+            int screen_x = sprite.x_position - 8 + x;
+
+            if (screen_x < 0 || screen_x >= 160) continue;
+
+            //bool x_flip = sprite.attributes & 0x20;
+            bool x_flip = false;
+
+            int bit = x_flip ? x : (7 - x);
+            uint8_t pixel_value = ((high >> bit) & 1) << 1 | ((low >> bit) & 1);
+
+            // transparent pixel
+            if (pixel_value == 0) continue;
+
+            bool priority = sprite.attributes & 0x80;
+            bool bg_non_zero = (scanline_color_index[screen_x] != 0);
+
+            if (priority && bg_non_zero) continue; // behind BG
+            
+            bool pallete_bit = sprite.attributes & 0x10;
+            uint8_t palette = pallete_bit ? bus->bus_read(0xFF49) : bus->bus_read(0xFF48);
+
+            uint8_t shade = (palette >> (pixel_value * 2)) & 0x03;
+
+            gb_color color = get_color(shade);
+            buffer.set_pixel(screen_x, screen_y, color);
+        }
+    }
 }
+
 void gb_ppu::set_bus(const std::shared_ptr<gb_bus>& b) 
 {
     bus = b; 
@@ -315,6 +396,23 @@ uint8_t gb_ppu::read_BGP()
 void gb_ppu::write_BGP(uint8_t data)
 {
     BGP = data;
+}
+
+uint8_t gb_ppu::read_OPB0()
+{
+    return OBP0;
+}
+void gb_ppu::write_OBP0(uint8_t data)
+{
+    OBP0 = data;
+}
+uint8_t gb_ppu::read_OPB1()
+{
+    return OBP1;
+}
+void gb_ppu::write_OBP1(uint8_t data)
+{
+    OBP1 = data;
 }
 void gb_ppu::dump_vram(const std::string &filename) 
 {
