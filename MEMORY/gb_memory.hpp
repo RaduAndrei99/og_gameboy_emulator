@@ -18,7 +18,6 @@ struct gb_memory
     uint8_t oam[0xA0];
 
     uint8_t KEY1 = 0x00;
-    uint8_t JOYP = 0x3F;
 
     uint8_t read_main(uint16_t address);
     void write_main(uint16_t address, uint8_t dataIn);

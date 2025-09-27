@@ -10,6 +10,7 @@ add_subdirectory(MEMORY)
 add_subdirectory(CARTRIDGE)
 add_subdirectory(TIMER)
 add_subdirectory(VIDEO)
+add_subdirectory(JOYPAD)
 add_subdirectory(BUS)
 add_subdirectory(CPU)
 

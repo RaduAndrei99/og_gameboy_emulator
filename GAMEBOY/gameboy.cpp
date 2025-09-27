@@ -6,6 +6,7 @@ gameboy::gameboy()
     bus = std::make_shared<gb_bus>();
     cpu = std::make_shared<sharpsm83>();
     video = std::make_shared<gb_ppu>();
+    joypad = std::make_shared<gb_joypad>();
 
     cpu->set_bus(bus);
     bus->set_cpu(cpu);
@@ -16,7 +17,10 @@ gameboy::gameboy()
     timer->set_bus(bus);
 
     bus->set_video(video);
-    video->set_bus(bus);   
+    video->set_bus(bus); 
+    
+    bus->set_joypad(joypad);
+    joypad->set_bus(bus);
 }
 
 void gameboy::load_cartridge(const std::string& path)
@@ -55,6 +59,10 @@ std::shared_ptr<gb_timer>& gameboy::get_timer()
     return timer;
 }
 
+std::shared_ptr<gb_joypad>& gameboy::get_joypad()
+{
+    return joypad;
+}
 void gameboy::run()
 {
     is_running = true;
