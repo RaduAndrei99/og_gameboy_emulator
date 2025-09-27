@@ -1,5 +1,6 @@
-#include "gb_bus.hpp"
 #include <iostream>
+
+#include "gb_bus.hpp"
 
 const std::array<uint8_t, 256> bootDMG = {
     0x31, 0xFE, 0xFF, 0xAF, 0x21, 0xFF, 0x9F, 0x32, 0xCB, 0x7C, 0x20, 0xFB, 0x21, 0x26, 0xFF, 0x0E,
@@ -68,7 +69,7 @@ uint8_t gb_bus::bus_read(const uint16_t& address)
     if(0xFF00 <= address && address <= 0xFF7F)
     {
         //std::cout<<"[READ] IO: "<<std::hex<<address<<'\n';
-        //if (address == 0xFF00) return mem.JOYP | 0x0F; //TODO: implement properly
+        if (address == 0xFF00) return joypad->read();
         if (address == 0xFF01) return serial_data;
         if (address == 0xFF02) return serial_control;
         if (address == 0xFF04) return timer->get_DIV();
@@ -165,7 +166,8 @@ void gb_bus::bus_write(const uint16_t& address, const uint8_t& data)
 
         if (address == 0xFF00) // Joypad
         { 
-            mem.JOYP = data & 0x30;
+            joypad->write(data);
+
             return;
         }
         if (address == 0xFF01) // SB - serial data
@@ -305,7 +307,7 @@ void gb_bus::set_cpu(const std::shared_ptr<sharpsm83>& c)
 }
 void gb_bus::tick(int cycles) 
 { 
-    video->tick(4*cycles);//!!!!!!!!!!!!!!!!!!!
+    video->tick(cycles);
     
     timer->tick(4*cycles); 
 }
@@ -316,6 +318,10 @@ void gb_bus::set_timer(const std::shared_ptr<gb_timer>& t)
 void gb_bus::set_video(const std::shared_ptr<gb_ppu>& v)
 {
     video = v;
+}
+void gb_bus::set_joypad(const std::shared_ptr<gb_joypad>& j)
+{
+    joypad = j;
 }
 void gb_bus::dma_transfer(uint8_t byte)
 {

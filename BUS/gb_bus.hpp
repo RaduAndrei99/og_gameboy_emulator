@@ -6,10 +6,13 @@
 #include "../CPU/cpu_sharpsm83.hpp"
 #include "../TIMER/gb_timer.hpp"
 #include "../VIDEO/gb_ppu.hpp"
+#include "../JOYPAD/gb_joypad.hpp"
+
 
 class sharpsm83;
 class gb_timer;
 class gb_ppu;
+class gb_joypad;
 
 struct gb_bus
 {
@@ -17,6 +20,7 @@ struct gb_bus
     std::shared_ptr<sharpsm83> cpu;
     std::shared_ptr<gb_ppu>  video;
     std::shared_ptr<gb_timer> timer;
+    std::shared_ptr<gb_joypad> joypad;
 
     bool boot_rom_active = true;
 
@@ -32,6 +36,7 @@ struct gb_bus
     void set_cpu(const std::shared_ptr<sharpsm83>& c);
     void set_timer(const std::shared_ptr<gb_timer>& t);
     void set_video(const std::shared_ptr<gb_ppu>& v);
+    void set_joypad(const std::shared_ptr<gb_joypad>& j);
 
     void tick(int cycles);
 
