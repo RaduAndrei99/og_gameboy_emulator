@@ -189,13 +189,14 @@ void gb_ppu::render_background_line()
         uint8_t tile_index = bus->bus_read(tile_map_address);
 
         // Handle signed indexing in 0x8800 mode
-        uint real_index = (LCDC & 0x10) ? tile_index : (int8_t)tile_index;
+        uint real_index = (LCDC & 0x10) ? tile_index : ((int8_t)tile_index + 128);
 
         // Each tile = 16 bytes (2 bytes per row, 8 rows)
         uint16_t tile_addr = tile_data_base + (real_index * 16);
 
         // Select row within tile
         uint8_t tile_line = scrolled_y % 8;
+
         uint8_t low  = bus->bus_read(tile_addr + tile_line * 2);
         uint8_t high = bus->bus_read(tile_addr + tile_line * 2 + 1);
 
@@ -257,6 +258,7 @@ void gb_ppu::render_sprite_line()
         }
 
         // Fetch the 2 bytes for this row of tile data
+
         uint16_t tile_addr = 0x8000 + (tile_index * 16);
         uint8_t low  = bus->bus_read(tile_addr + y_in_sprite * 2);
         uint8_t high = bus->bus_read(tile_addr + y_in_sprite * 2 + 1);
@@ -268,9 +270,8 @@ void gb_ppu::render_sprite_line()
 
             if (screen_x < 0 || screen_x >= 160) continue;
 
-            //bool x_flip = sprite.attributes & 0x20;
-            bool x_flip = false;
-
+            bool x_flip = sprite.attributes & 0x20;
+            
             int bit = x_flip ? x : (7 - x);
             uint8_t pixel_value = ((high >> bit) & 1) << 1 | ((low >> bit) & 1);
 

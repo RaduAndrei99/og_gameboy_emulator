@@ -18,8 +18,12 @@ void gb_emulator::cpu_task()
 bool gb_emulator::OnUserCreate() 
 {
     // Called once at the start, so create things here
-    gb.load_cartridge("../ROMs/Tetris.gb");
+    //gb.load_cartridge("../ROMs/Tetris.gb");
     //gb.load_cartridge("../ROMs/Pokemon-Red.gb");
+    //gb.load_cartridge("../ROMs/super_mario_land.gb");
+    //gb.load_cartridge("../ROMs/donkey_kong.gb");
+    //gb.load_cartridge("../ROMs/dr_mario.gb");
+    //gb.load_cartridge("../ROMs/v-rally.gb");
 
     //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/01-special.gb");
     //gb.load_cartridge("../ROMs/test/cpu_instrs/individual/02-interrupts.gb");
@@ -49,6 +53,8 @@ bool gb_emulator::OnUserCreate()
 
     //gb.load_cartridge("../ROMs/test/halt_bug.gb");
     //gb.load_cartridge("../ROMs/hello-world.gb");
+    //gb.load_cartridge("../ROMs/opus5.gb");
+
 
     gb.get_cpu()->reset();
     
@@ -87,12 +93,20 @@ bool gb_emulator::OnUserUpdate(float fElapsedTime)
         //     case gb_color::White: return olc::WHITE;
         //     default: return olc::BLACK; 
         // }
+        // switch(c)
+        // {
+        //     case gb_color::Black: return olc::Pixel(15,56,15);
+        //     case gb_color::DarkGray: return olc::Pixel(48,98,48);
+        //     case gb_color::LighGray: return olc::Pixel(139,172,15);
+        //     case gb_color::White: return olc::Pixel(155,188,15);
+        //     default: return olc::BLACK; 
+        // }
         switch(c)
         {
-            case gb_color::Black: return olc::Pixel(15,56,15);
-            case gb_color::DarkGray: return olc::Pixel(48,98,48);
-            case gb_color::LighGray: return olc::Pixel(139,172,15);
-            case gb_color::White: return olc::Pixel(155,188,15);
+            case gb_color::Black: return olc::Pixel(12,24,17);
+            case gb_color::DarkGray: return olc::Pixel(66,96,61);
+            case gb_color::LighGray: return olc::Pixel(139,164,106);
+            case gb_color::White: return olc::Pixel(202,221,149);
             default: return olc::BLACK; 
         }
     };
@@ -113,6 +127,17 @@ bool gb_emulator::OnUserUpdate(float fElapsedTime)
     {
         OnUserCreate();
     }
+    gb.get_joypad()->set_left(GetKey(olc::Key::A).bHeld);
+    gb.get_joypad()->set_right(GetKey(olc::Key::D).bHeld);
+    gb.get_joypad()->set_up(GetKey(olc::Key::W).bHeld);
+    gb.get_joypad()->set_down(GetKey(olc::Key::S).bHeld);
+
+    gb.get_joypad()->set_b(GetKey(olc::Key::N).bHeld);
+    gb.get_joypad()->set_a(GetKey(olc::Key::M).bHeld);
+    gb.get_joypad()->set_select(GetKey(olc::Key::SPACE).bHeld);
+    gb.get_joypad()->set_start(GetKey(olc::Key::ENTER).bHeld);
+
+    gb.get_joypad()->update();
 
     // Frame pacing
     // auto now = std::chrono::high_resolution_clock::now();

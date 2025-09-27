@@ -2,12 +2,11 @@
 #include "EMULATOR/gb_emulator.hpp"
 //#include "GAMEBOY/gameboy.hpp"
 
-
 int main(int argc, char *argv[])
 {
 
     // gameboy gb;
-    // gb.load_cartridge("ROMs/test/halt_bug.gb");
+    // gb.load_cartridge("ROMs/donkey_kong.gb");
     // gb.run();
 
     gb_emulator emu;

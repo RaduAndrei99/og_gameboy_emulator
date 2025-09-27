@@ -197,7 +197,7 @@ void sharpsm83::execute_nop()
 //##############################################################################
 void sharpsm83::execute_halt()
 {
-    std::cout<<"HALT"<<'\n';
+    //std::cout<<"HALT"<<'\n';
 
     bool any_interrupt_pending = bus->bus_read(0xFFFF) & bus->bus_read(0xFF0F) & 0x1F;
 
@@ -2696,14 +2696,14 @@ void sharpsm83::handle_interrupts()
     }
     else if(interrupt_request.b1)  //LCD STAT
     {
-        std::cout<<"HANDLE LCDC"<<'\n';
+        //std::cout<<"HANDLE LCDC"<<'\n';
 
         IF.b1 = 0;
         PC.b0_15 = interrupt_address::LCDC;
     }
     else if(interrupt_request.b2)  //Timer
     {
-        std::cout<<"HANDLE TIMER"<<'\n';
+        //std::cout<<"HANDLE TIMER"<<'\n';
 
         IF.b2 = 0;
         PC.b0_15 = interrupt_address::TIMER;
@@ -2734,7 +2734,7 @@ void sharpsm83::finish_instruction()
     {
         interrupts_enabled = true;
         ei_scheduled = false;
-        std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Enable interrupts!"<<'\n';
+        //std::cout<<"0x"<<std::hex<<(int)PC.b0_15<<": Enable interrupts!"<<'\n';
     }
     if (ei_pending) 
     {

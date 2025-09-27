@@ -7,6 +7,7 @@
 #include "../CARTRIDGE/gb_cartridge.hpp"
 #include "../BUS/gb_bus.hpp"
 #include "../TIMER/gb_timer.hpp"
+#include "../JOYPAD/gb_joypad.hpp"
 
 class gameboy{
 private:
@@ -15,6 +16,7 @@ private:
     std::shared_ptr<sharpsm83> cpu;
     std::shared_ptr<gb_timer> timer;
     std::shared_ptr<gb_ppu> video;
+    std::shared_ptr<gb_joypad> joypad;
 
     bool is_running = false;
     
@@ -29,6 +31,7 @@ public:
     std::shared_ptr<gb_bus>& get_bus();
     std::shared_ptr<gb_ppu>& get_video();
     std::shared_ptr<gb_timer>& get_timer();
+    std::shared_ptr<gb_joypad>& get_joypad();
 
     void run();
 
