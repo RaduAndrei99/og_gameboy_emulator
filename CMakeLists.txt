@@ -39,10 +39,21 @@ if(NOT OPENGL_FOUND)
     message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
+if(UNIX AND NOT APPLE)
+    find_package(X11 REQUIRED)
+    include_directories(${X11_INCLUDE_DIRS})
+    link_directories(${X11_LIBRARY_DIRS})
+    add_definitions(${X11_DEFINITIONS})
+
+    if(NOT X11_FOUND)
+        message(FATAL_ERROR "X11 not found! Please install the X11 development libraries (e.g., libx11-dev).")
+    endif()
+endif()
+
 add_subdirectory(EMULATOR)
 
 # Main executable
 add_executable(gbemu main.cpp)
 
 # Link CPU (which itself links MEMORY and CARTRIDGE)
-target_link_libraries(gbemu PRIVATE GB_EMULATOR ${PNG_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(gbemu PRIVATE GB_EMULATOR ${PNG_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${X11_LIBRARIES})

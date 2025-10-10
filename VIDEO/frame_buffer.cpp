@@ -18,7 +18,7 @@ int frame_buffer::pixel_index(int x, int y) const { return (y * width) + x; }
 
 void frame_buffer::reset() 
 {
-    for (uint i = 0; i < width * height; i++) 
+    for (unsigned int i = 0; i < width * height; i++) 
     {
         buffer[i] = gb_color::White;
     }

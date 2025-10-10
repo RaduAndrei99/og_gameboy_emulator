@@ -4,6 +4,8 @@
 #include<string>
 #include<vector>
 #include<map>
+#include<cstdint>
+#include<memory>
 
 struct cartridge_header{
     static const uint16_t ENTRY_POINT = 0x0100;
